@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Panel;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -21,6 +19,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -82,12 +82,7 @@ import ssedit.GUI.SimpleView;
 import ssedit.GUI.UndoHelper;
 import ssedit.LinkForeach.LinkForEach;
 import ssedit.SSQL.SSQL_exec;
-import ssedit.SSvisual.SSvisualWorker;
 import ssedit.Tree.Exec;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 @SuppressWarnings("serial")
 public class FrontEnd extends JFrame implements ChangeListener, ItemListener, KeyListener, MouseListener,
@@ -280,7 +275,8 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
     public FrontEnd() {
         combodata.add("クエリの新規作成");
-        Popup.getTagTexts2(Functions.getWorkingDir() + GlobalEnv.OS_FS + "XML" + GlobalEnv.OS_FS + "medias_list.xml", "name", combodata);
+        combodata.add("HTML");
+        Popup.getTagTexts2(Functions.getWorkingDir() + GlobalEnv.OS_FS + "XML" + GlobalEnv.OS_FS + "media_list.xml", "name", combodata);
         libsClassPath = Functions.getClassPath();
         GlobalEnv.regex[0] = new JCheckBox("正規表現");
         GlobalEnv.caseSensitivity[0] = new JCheckBox("大/小文字の区別");
@@ -525,9 +521,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         bottomPanel1.add(stopButton);
         stopButton.setEnabled(false);
 
+        /*
         bottomPanel1.add(linkforeachButton);
         bottomPanel1.add(simpleviewButton);
         bottomPanel1.add(indentButton);
+        */
         
         // halken
         // bottomPanel1.add(ssvisual);
@@ -604,9 +602,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         config_scrollPane.setPreferredSize(new Dimension(0, 1200));
 
-//		manual_button.setIcon(smallIcon);
-        exitPanel3.add(manualLabel);
-        exitPanel3.add(manual_button);
+        //exitPanel3.add(manualLabel);
+        //exitPanel3.add(manual_button);
+        
         JLabel cofigFilePath_label = new JLabel(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile);
 
         if (GlobalEnv.radio1Selected == 1) { // なしがtrueのとき
@@ -907,7 +905,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 						//ViewerThread.start();
                         tmp = GlobalEnv.textPane.getText();
                     } else {
-						System.out.println("クエリ実行中につき、この先進むべからず！");
+						//System.out.println("クエリ実行中につき、この先進むべからず！");
                     }
                 }
             }
@@ -1304,7 +1302,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         manual_button.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent arg0) {
-                Functions.open("http://www.db.ics.keio.ac.jp/ssql/DL/SSQL13man.pdf");
+                Functions.open("http://www.db.ics.keio.ac.jp/ssql/DL/SSQLman.pdf");
             }
         });
 

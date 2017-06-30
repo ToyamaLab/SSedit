@@ -75,7 +75,7 @@ public class GlobalEnv {
 
 	public static List<String> decorations_array = new ArrayList<String>();
 	public static List<String> functions_array = new ArrayList<String>();
-	public static List<String> medias_array = new ArrayList<String>();
+	public static List<String> media_array = new ArrayList<String>();
 //	static Vector<String> decorations_array = new Vector<String>();
 //	static Vector<String> functions_array = new Vector<String>();
 	public static List<String> file_array = new ArrayList<String>();

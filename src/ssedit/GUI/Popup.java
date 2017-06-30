@@ -23,13 +23,14 @@ import ssedit.Common.GlobalEnv;
 
 public class Popup{
 	public static JPopupMenu newFile_popup = new JPopupMenu();
-	String mediaFile = "medias_list.xml";
+	String mediaFile = "media_list.xml";
 	
 	public Popup(){
 		JMenu createNewFile = new JMenu("新規作成");
-		getTagTexts(Functions.getWorkingDir() + GlobalEnv.OS_FS + "XML" + GlobalEnv.OS_FS + mediaFile, "name", GlobalEnv.medias_array);
-		for(int i = 0; i < GlobalEnv.medias_array.size(); i++){
-			final JMenuItem media = new JMenuItem(GlobalEnv.medias_array.get(i));
+		getTagTexts(Functions.getWorkingDir() + GlobalEnv.OS_FS + "XML" + GlobalEnv.OS_FS + mediaFile, "name", GlobalEnv.media_array);
+		GlobalEnv.media_array.add("HTML");
+		for(int i = 0; i < GlobalEnv.media_array.size(); i++){
+			final JMenuItem media = new JMenuItem(GlobalEnv.media_array.get(i));
 			media.addActionListener(new AbstractAction() {
 				
 				@Override

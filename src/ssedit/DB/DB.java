@@ -81,7 +81,7 @@ public class DB {
 				}
 				// ステートメントオブジェクトを生成
 				Statement stmt = con.createStatement();
-				stmt.setQueryTimeout(30); // set timeout to 30 sec.
+				//stmt.setQueryTimeout(30); // set timeout to 30 sec.
 				DatabaseMetaData dmd = con.getMetaData();
 				ResultSet result_table = null;
 				String types[] = { "TABLE" };

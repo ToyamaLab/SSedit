@@ -2,6 +2,8 @@
 bin/
 *.swp
 .project
+.classpath
 .settings/org.eclipse.core.resources.prefs
 .settings/org.eclipse.jdt.core.prefs
 .settings/*
+target/
