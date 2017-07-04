@@ -755,6 +755,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         };
         Action popdecoAct = new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) {
+            	System.out.println("jkedclhekcher");
                 if(Functions.decorationCheck(GlobalEnv.p)){
                     try {
                         GlobalEnv.doc.insertString(GlobalEnv.p, "@", CaretState.plane);
@@ -767,23 +768,36 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                     } catch (BadLocationException e1) {
                         e1.printStackTrace();
                     }
+                    
                     show_decorationPopup(e);
+                  
                 }
             }
         };
+        
         Action popdecoAct2 = new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) {
                 if(Functions.decorationCheck(GlobalEnv.p)){
-                    show_decorationPopup2(e);
+                   try{
+                	   GlobalEnv.doc.insertString(GlobalEnv.p, ",", CaretState.plane);
+                   } catch (BadLocationException e1){
+                	   e1.printStackTrace();
+                   }
+                   show_decorationPopup(e);
+                   
                 } else {
                     try {
                         GlobalEnv.doc.insertString(GlobalEnv.p, ",", CaretState.plane);
                     } catch (BadLocationException e1) {
                         e1.printStackTrace();
                     }
+                    show_decorationPopup(e);
                 }
+//                GlobalEnv.decoration_popup.setVisible(false);
+//                GlobalEnv.textPane.requestFocus();
             }
         };
+        
         Action caretcommentAct = new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) {
                 CaretState.commentout(GlobalEnv.textPane, GlobalEnv.doc);
@@ -836,8 +850,8 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         GlobalEnv.textPane.getInputMap().put(k_search, "search");
         GlobalEnv.textPane.getInputMap().put(k_function, "functionPop");
-        GlobalEnv.textPane.getInputMap().put(k_decoration, "decorationPop");
-        GlobalEnv.textPane.getInputMap().put(k_decoration2, "decorationPop2");
+//        GlobalEnv.textPane.getInputMap().put(k_decoration, "decorationPop");
+//        GlobalEnv.textPane.getInputMap().put(k_decoration2, "decorationPop2");
         GlobalEnv.textPane.getInputMap().put(k_comment, "commentCaret");
         GlobalEnv.textPane.getInputMap().put(k_delete, "deleteCaret");
         GlobalEnv.textPane.getInputMap().put(k_copy, "copyCaret");
@@ -2086,6 +2100,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     }
 
     public void keyPressed(KeyEvent e) {
+//    	System.out.print("Pressed Key.");
+    	  
+//    	    	System.out.println("hide");
+//    	    	GlobalEnv.decoration_popup.hide();
+    	    
     }
 
 
@@ -2248,7 +2267,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
     }
 
+    
     private void show_decorationPopup(ActionEvent e) {
+    	System.out.println("Pressed " + e.getActionCommand());
         Rectangle rect = Functions.getRect();
         GlobalEnv.decoration_popup.show(GlobalEnv.textPane, rect.x, rect.y + rect.height);
 //		Rectangle r;
@@ -2259,10 +2280,15 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 //			e1.printStackTrace();
 //		}
     }
-    private void show_decorationPopup2(ActionEvent e) {
+  
+ 
+    
+    
+    
+ /*   private void show_decorationPopup2(ActionEvent e) {
         Rectangle rect = Functions.getRect();
         GlobalEnv.decoration_popup.show(GlobalEnv.textPane, rect.x, rect.y + rect.height);
-    }
+    }*/
 
     private void show_functionPopup(ActionEvent e) {
         Rectangle rect = Functions.getRect();

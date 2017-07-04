@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.awt.*;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -149,10 +150,16 @@ public class GlobalEnv {
 				if (sz.width < w) {
 					return true;
 				}
-			}
+					
+				}
+		
 			return false;
 		}
+		
 	};
+	
+	
+	
 	public static JTextPane resultPane = new JTextPane() {
 		// textPaneでも横スクロールが出現
 		@Override
