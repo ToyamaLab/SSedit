@@ -2267,7 +2267,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
     }
 
-    
+   
     private void show_decorationPopup(ActionEvent e) {
     	System.out.println("Pressed " + e.getActionCommand());
         Rectangle rect = Functions.getRect();
