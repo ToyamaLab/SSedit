@@ -26,7 +26,7 @@ import ssedit.Common.GlobalEnv;
 public class DB {
 	public static void db() {
 		GlobalEnv.tabledata.clear();
-		File file = new File(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile); 
+		File file = new File(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile);
 		// 使用しているドライバー
 		String driver = "";
 		// データベースのパス
@@ -35,9 +35,9 @@ public class DB {
 		String host = "";
 		// データベースのユーザー（posgresql）
 		String user = "";
-		
+
 //		String outdir = "";
-		
+
 		if(file.exists()){
 		driver = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "driver");
 		db = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "db");
@@ -84,8 +84,9 @@ public class DB {
 				//stmt.setQueryTimeout(30); // set timeout to 30 sec.
 				DatabaseMetaData dmd = con.getMetaData();
 				ResultSet result_table = null;
-				String types[] = { "TABLE" };
+				String types[] = { "TABLE" , "VIEW"};
 				result_table = dmd.getTables(null, null, "%", types);// テーブルを取得
+
 
 				Hashtable<String, Object> treedata = new Hashtable<String, Object>();// テーブルの一覧を載せる
 
@@ -115,7 +116,7 @@ public class DB {
 					final JTree tree = new JTree(treedata);
 					tree.setToggleClickCount(4);
 					tree.addMouseListener(new MouseListener() {
-						
+
 						@Override
 						public void mouseReleased(MouseEvent e) {
 							if(tree.getRowForLocation(e.getX(), e.getY()) == -1) return;
@@ -139,29 +140,29 @@ public class DB {
 									} catch (BadLocationException e1) {
 										e1.printStackTrace();
 									}
-									
+
 								}
 							}
 						}
-						
+
 						@Override
 						public void mousePressed(MouseEvent e) {
-							
+
 						}
-						
+
 						@Override
 						public void mouseExited(MouseEvent e) {
-							
+
 						}
-						
+
 						@Override
 						public void mouseEntered(MouseEvent e) {
-							
+
 						}
-						
+
 						@Override
 						public void mouseClicked(MouseEvent e) {
-							
+
 						}
 					});
 					tree.expandRow(0);
