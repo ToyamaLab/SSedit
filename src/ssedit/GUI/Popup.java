@@ -10,7 +10,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -24,7 +23,7 @@ import ssedit.Common.GlobalEnv;
 public class Popup{
 	public static JPopupMenu newFile_popup = new JPopupMenu();
 	String mediaFile = "media_list.xml";
-	
+
 	public Popup(){
 		JMenu createNewFile = new JMenu("新規作成");
 		getTagTexts(Functions.getWorkingDir() + GlobalEnv.OS_FS + "XML" + GlobalEnv.OS_FS + mediaFile, "name", GlobalEnv.media_array);
@@ -32,7 +31,7 @@ public class Popup{
 		for(int i = 0; i < GlobalEnv.media_array.size(); i++){
 			final JMenuItem media = new JMenuItem(GlobalEnv.media_array.get(i));
 			media.addActionListener(new AbstractAction() {
-				
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO 自動生成されたメソッド・スタブ
@@ -44,10 +43,10 @@ public class Popup{
 			createNewFile.add(media);
 		}
 		newFile_popup.add(createNewFile);
-		
+
 	}
-	
-	
+
+
 	// xmlファイルのドキュメントから指定したタグの中身のデータを取得し、配列に格納
 		public static void getTagTexts(String URI, String target,
 //				Vector<String> str_list) {
@@ -90,11 +89,11 @@ public class Popup{
 			}
 //			Collections.sort(str_list);
 		}
-		
+
 		public void createQuery(String media){
 			String query = GlobalEnv.textPane.getText();
 			if(query.trim().isEmpty() || FrontEnd.filestateLabel2.getText().isEmpty()){
-				GlobalEnv.textPane.setText("GENERATE " + media + " {\n\n} FROM ;");
+				GlobalEnv.textPane.setText("GENERATE " + media + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
 				FrontEnd.filenameLabel.setText("");
 			} else {
 				int option = JOptionPane.showConfirmDialog(null,
@@ -102,15 +101,15 @@ public class Popup{
 						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 				if (option == JOptionPane.YES_OPTION) {
-					FrontEnd.button4.doClick();	
-					if(FrontEnd.filestateLabel.getText().equals("ファイル名を入力してください") 
+					FrontEnd.button4.doClick();
+					if(FrontEnd.filestateLabel.getText().equals("ファイル名を入力してください")
 							|| FrontEnd.filestateLabel.getText().equals("キャンセルしました")){
-						return;	
+						return;
 					}
-					GlobalEnv.textPane.setText("GENERATE " + media + " {\n\n} FROM ;");	
+					GlobalEnv.textPane.setText("GENERATE " + media + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
 					FrontEnd.filenameLabel.setText("");
 				} else if (option == JOptionPane.NO_OPTION) {
-					GlobalEnv.textPane.setText("GENERATE " + media + " {\n\n} FROM ;");
+					GlobalEnv.textPane.setText("GENERATE " + media + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
 					FrontEnd.filenameLabel.setText("");
 				} else if(option == JOptionPane.CANCEL_OPTION){
 					FrontEnd.stateTimer.start();

@@ -204,7 +204,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
     //TODO
     JButton linkforeachButton = new JButton("％分割");
-    
+
     // halken
     // JButton ssvisual = new JButton("SSvisual");
 
@@ -526,7 +526,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         bottomPanel1.add(simpleviewButton);
         bottomPanel1.add(indentButton);
         */
-        
+
         // halken
         // bottomPanel1.add(ssvisual);
 
@@ -604,7 +604,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         //exitPanel3.add(manualLabel);
         //exitPanel3.add(manual_button);
-        
+
         JLabel cofigFilePath_label = new JLabel(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile);
 
         if (GlobalEnv.radio1Selected == 1) { // なしがtrueのとき
@@ -768,13 +768,13 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                     } catch (BadLocationException e1) {
                         e1.printStackTrace();
                     }
-                    
+
                     show_decorationPopup(e);
-                  
+
                 }
             }
         };
-        
+
         Action popdecoAct2 = new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) {
                 if(Functions.decorationCheck(GlobalEnv.p)){
@@ -784,7 +784,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 	   e1.printStackTrace();
                    }
                    show_decorationPopup(e);
-                   
+
                 } else {
                     try {
                         GlobalEnv.doc.insertString(GlobalEnv.p, ",", CaretState.plane);
@@ -797,7 +797,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 //                GlobalEnv.textPane.requestFocus();
             }
         };
-        
+
         Action caretcommentAct = new AbstractAction() {
             @Override public void actionPerformed(ActionEvent e) {
                 CaretState.commentout(GlobalEnv.textPane, GlobalEnv.doc);
@@ -991,7 +991,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 LinkForEach.process(target, filenameLabel.getText());
             }
         });
-        
+
         // halken
         /*
         ssvisual.addActionListener(new AbstractAction() {
@@ -2049,11 +2049,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 queryCombo.setSelectedIndex(0);
                 return;
             }
-            GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n} FROM ;");
+            GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
             filenameLabel.setText("");
             queryCombo.setSelectedIndex(0);
         } else if (option == JOptionPane.NO_OPTION) {
-            GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n} FROM ;");
+            GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
             filenameLabel.setText("");
             queryCombo.setSelectedIndex(0);
         } else if(option == JOptionPane.CANCEL_OPTION){
@@ -2078,14 +2078,14 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 return;
             } else {
                 if (query.equals(GlobalEnv.OS_LS + "")) {
-                    GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n} FROM ;");
+                    GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
                     filenameLabel.setText("");
                     queryCombo.setSelectedIndex(0);
 //					currentState = queryCombo.getSelectedIndex();
                 } else {
                     // クエリが編集中だったとき（保存済み）
                     if(filestateLabel2.getText().equals("")){
-                        GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n} FROM ;");
+                        GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
                         filenameLabel.setText("");
                         queryCombo.setSelectedIndex(0);
                     // 未保存だったら
@@ -2101,10 +2101,10 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
     public void keyPressed(KeyEvent e) {
 //    	System.out.print("Pressed Key.");
-    	  
+
 //    	    	System.out.println("hide");
 //    	    	GlobalEnv.decoration_popup.hide();
-    	    
+
     }
 
 
@@ -2267,7 +2267,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
     }
 
-   
+
     private void show_decorationPopup(ActionEvent e) {
     	System.out.println("Pressed " + e.getActionCommand());
         Rectangle rect = Functions.getRect();
@@ -2280,11 +2280,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 //			e1.printStackTrace();
 //		}
     }
-  
- 
-    
-    
-    
+
+
+
+
+
  /*   private void show_decorationPopup2(ActionEvent e) {
         Rectangle rect = Functions.getRect();
         GlobalEnv.decoration_popup.show(GlobalEnv.textPane, rect.x, rect.y + rect.height);
