@@ -1,19 +1,31 @@
 package ssedit.GUI;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Insets;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JTextPane;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import ssedit.Common.GlobalEnv;
 
 public class Edit extends JPanel {
 	// とりあえずの設定値
-	private final Font defaultEditFont = new Font("MSゴシック", Font.PLAIN, 12);
-	private static JTextPane linePane;
+	public int size = 12;
+	public Font defaultEditFont = new Font("MSゴシック", Font.PLAIN, size);
+	public static JTextPane linePane;
 	// 現在の行数
 	private static int line;
 
@@ -91,5 +103,11 @@ public class Edit extends JPanel {
 	private static int getLineNumber() {
 		Document doc = GlobalEnv.textPane.getDocument();
 		return doc.getDefaultRootElement().getElementIndex(doc.getLength()) + 1;
+	}
+
+	public void setText() {
+		defaultEditFont = new Font("MSゴシック", Font.PLAIN, size);
+		GlobalEnv.textPane.setFont(defaultEditFont);
+		GlobalEnv.textPane.setText(GlobalEnv.textPane.getText());
 	}
 }

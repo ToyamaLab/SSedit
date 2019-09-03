@@ -25,7 +25,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 
 import ssedit.Common.Functions;
 import ssedit.Common.GlobalEnv;

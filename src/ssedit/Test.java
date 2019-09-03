@@ -85,7 +85,7 @@ import ssedit.SSQL.SSQL_exec;
 import ssedit.Tree.Exec;
 
 @SuppressWarnings("serial")
-public class FrontEnd extends JFrame implements ChangeListener, ItemListener, KeyListener, MouseListener,
+public class Test extends JFrame implements ChangeListener, ItemListener, KeyListener, MouseListener,
         ActionListener, CaretListener, TreeSelectionListener {
     Edit editPanel;
 
@@ -98,7 +98,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     public static void main(String[] args) throws IOException,
             InterruptedException {
 //    	System.out.println("XXX");
-        new FrontEnd();
+        new Test();
     }
 
     /**********************************************************************************************/
@@ -150,6 +150,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JButton restoreButton = new JButton(restoreIcon);
     JButton searchButton = new JButton(searchIcon);
     boolean restore_flag = false;
+
     //シンプルビュー
 //    JCheckBox simpleviewbox = new JCheckBox("Simpleview");
 //    boolean simpleview_flag = false;
@@ -270,20 +271,15 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     public static String currentfileData = "";
 
     DefaultMutableTreeNode current = null;
-    private final JButton button_plus = new JButton("＋");
-    private final JButton button_minus = new JButton("ー");
-    private final JLabel label = new JLabel("クエリ記入欄の文字サイズ ：");
-    private final JLabel label_size = new JLabel("12");
-    private final JButton saveButton = new JButton("保存");
+    private final JButton button_1 = new JButton("拡大");
+    private final JLabel label = new JLabel("文字サイズ ：");
+    private final JTextField textField = new JTextField();
+    private final JButton button_2 = new JButton("保存");
 
 
-    JPopupMenu popup;
-
-
-
-
-
-    public FrontEnd() {
+    public Test() {
+    	textField.setBounds(360, 5, 66, 26);
+    	textField.setColumns(10);
         combodata.add("クエリの新規作成");
         combodata.add("HTML");
         Popup.getTagTexts2(Functions.getWorkingDir() + GlobalEnv.OS_FS + "XML" + GlobalEnv.OS_FS + "media_list.xml", "name", combodata);
@@ -420,7 +416,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         viewPanel.add(pane2);
         viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.PAGE_AXIS));// masato追加　縦にパネルを配置
 
-        add(viewPanel);
+        //add(viewPanel);
 
         JPanel dbPanel = new JPanel();
         JButton updatedbButton = new JButton("更新");
@@ -518,6 +514,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollpane2.setPreferredSize(new Dimension(550, 1200));// masato　サイズ変更
+        button3.setBounds(501, 17, 1, 1);
 
         // 1つ目のタブ
         // masato　パネル名変更等　14行
@@ -527,7 +524,12 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         button4.setContentAreaFilled(false);
         button4.setBorderPainted(false);
         button4.setPreferredSize(new Dimension(1, 1));
-        bottomPanel1.add(saveButton);
+        button_2.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        	}
+        });
+        
+        bottomPanel1.add(button_2);
         bottomPanel1.add(button1);
         bottomPanel1.add(stopButton);
         stopButton.setEnabled(false);
@@ -542,57 +544,38 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         // bottomPanel1.add(ssvisual);
 
         bottomPanel1.add(button4);
-        bottomPanel.add(bottomPanel1);
+        //bottomPanel.add(bottomPanel1);
         allPanel1.add(topPanel1);
         JPanel middlePanel = new JPanel();
         JPanel filenamePanel = new JPanel();
         JPanel filestatePanel = new JPanel();
         filenamePanel.add(filestateLabel2);
         filenamePanel.add(filenameLabel);
+        filestatePanel.add(label);
         filestatePanel.add(filestateLabel);
 
         maximizeButton.setBorderPainted(false);
         searchButton.setBorderPainted(false);
 
-        Functions.addPanel(middlePanel, filenamePanel, 0, 0, 1, 1);
-        Functions.addPanel(middlePanel, queryCombo, 1, 0, 1, 1);
-        Functions.addPanel(middlePanel, searchButton, 2, 0, 1, 1);
-        Functions.addPanel(middlePanel, maximizeButton, 3, 0, 1, 1);
-//        Common.addPanel(middlePanel, simpleviewbox, 4, 0, 1, 1);
+//        Functions.addPanel(middlePanel, filenamePanel, 0, 0, 1, 1);
+//        Functions.addPanel(middlePanel, queryCombo, 1, 0, 1, 1);
+//        Functions.addPanel(middlePanel, searchButton, 2, 0, 1, 1);
+//        Functions.addPanel(middlePanel, maximizeButton, 3, 0, 1, 1);
+        middlePanel.add(filenamePanel);
+        middlePanel.add(queryCombo);
+        middlePanel.add(searchButton);
+        middlePanel.add(maximizeButton);
 
+//        Common.addPanel(middlePanel, simpleviewbox, 4, 0, 1, 1);
 
         allPanel1.add(middlePanel);
         allPanel1.add(filestatePanel);
-
-        //
-
-        button_plus.addActionListener(new ActionListener() {
+        button_1.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		editPanel.size += 1;
-        		editPanel.setText();
-        		textArea.setFont(editPanel.defaultEditFont);
-        		textArea.setText(textArea.getText());
-        		GlobalEnv.resultPane.setFont(editPanel.defaultEditFont);
-        		GlobalEnv.resultPane.setText(GlobalEnv.resultPane.getText());
-        		label_size.setFont(editPanel.defaultEditFont);
-        		label_size.setText(editPanel.size+"");
-
         	}
         });
 
-        button_minus.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		editPanel.size -= 1;
-        		editPanel.setText();
-        		textArea.setFont(editPanel.defaultEditFont);
-        		textArea.setText(textArea.getText());
-        		GlobalEnv.resultPane.setFont(editPanel.defaultEditFont);
-        		GlobalEnv.resultPane.setText(GlobalEnv.resultPane.getText());
-        		label_size.setFont(editPanel.defaultEditFont);
-        		label_size.setText(editPanel.size+"");
-        	}
-        });
-
+        filestatePanel.add(button_1);
         allPanel1.add(scrollpane);
         allPanel1.add(bottomPanel1);
         tabbed_Table.add("クエリViewer", viewPanel);
@@ -611,7 +594,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         splitPane3.setLeftComponent(splitPane4);
 
-        getContentPane().add(splitPane3, BorderLayout.CENTER);
+        //? getContentPane().add(splitPane3, BorderLayout.CENTER);
 
         // 2つ目のタブ関連
         JScrollPane scrollpane4 = new JScrollPane(GlobalEnv.resultPane2,
@@ -712,7 +695,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         JPanel p = new JPanel();
         p.add(new JLabel("                    "));
+        configPanel.setBounds(350, 18, 0, 0);
         configPanel.setLayout(GlobalEnv.gbl);
+        settingPanel.setBounds(355, 18, 0, 0);
         settingPanel.setLayout(GlobalEnv.gbl);
         GlobalEnv.urlCombo.setEditable(true);
 
@@ -734,22 +719,12 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         Functions.addPanel(configPanel, GlobalEnv.urlCombo, 1, 4, 2, 1);
 
 
-        JPanel textSize = new JPanel();
-        textSize.setPreferredSize(new Dimension(300, 40));
-        textSize.add(label);
-        button_minus.setPreferredSize(new Dimension(20, 20));
-        textSize.add(button_minus);
-        textSize.add(label_size);
-        button_plus.setPreferredSize(new Dimension(20, 20));
-        textSize.add(button_plus);
-
 //		JPanel settingPanel = new JPanel();
         Functions.addPanel(settingPanel, tab, 0, 0, 1, 1);
         Functions.addPanel(settingPanel, lang, 0, 1, 1, 1);
         Functions.addPanel(settingPanel, group1, 0, 2, 1, 1);
         Functions.addPanel(settingPanel, exitPanel3, 0, 3, 1, 1);
-        Functions.addPanel(settingPanel, textSize, 0, 4, 1, 1);
-
+        setting_Bottom_Panel.setLayout(null);
 //		Common.addPanel(settingPanel, exit_button3, 0, 4, 1, 1);
 //		Common.addPanel(settingPanel, button3, 0, 5, 1, 1);
 
@@ -757,6 +732,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         // masato　追加　5行
         setting_Bottom_Panel.add(configPanel);
         setting_Bottom_Panel.add(settingPanel);
+        
+        setting_Bottom_Panel.add(textField);
+        exit_button3.setBounds(495, 17, 1, 1);
         exit_button3.setContentAreaFilled(false);
         exit_button3.setBorderPainted(false);
         exit_button3.setPreferredSize(new Dimension(1, 1));
@@ -1032,14 +1010,6 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                                 }
                             });
 
-            }
-        });
-
-        saveButton.addActionListener(action1 = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                // クエリを保存
-                    button4.doClick();
             }
         });
 
@@ -1418,28 +1388,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, GlobalEnv.osShortcutKey),
                 execButton2); // 2つ目のタブ: [実行]ボタンのアクセラレータ'[Ctrl]+[Enter]'をセット
 
-        add(panel, BorderLayout.SOUTH);
-
-        textArea.addMouseListener(this);
-        GlobalEnv.textPane.addMouseListener(this);
-        GlobalEnv.resultPane.addMouseListener(this);
-        popup = new JPopupMenu();
-
-        JMenuItem p_copy = new JMenuItem("copy");
-        p_copy.addActionListener(this);
-        popup.add(p_copy);
-
-        JMenuItem p_cut = new JMenuItem("cut");
-        p_cut.addActionListener(this);
-        popup.add(p_cut);
-
-        JMenuItem p_paste = new JMenuItem("paste");
-        p_paste.addActionListener(this);
-        popup.add(p_paste);
-
-    }
-
-    public void text_processing() {
+        getContentPane().add(panel, BorderLayout.SOUTH);
 
     }
 
@@ -1904,6 +1853,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
     public static String get_execDir(){
         String libs = new File(GlobalEnv.EXE_FILE_PATH).getAbsolutePath();// 実行jarファイルの絶対パスを取得
+
         if (libs.contains(":")) {// ビルドバスの追加を行うと参照ライブラリ内のファイルのパスも付け加えてしまう仕様らしいので、:移行カット
             libs = libs.substring(0, libs.indexOf(":"));
         }
@@ -1926,30 +1876,14 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     }
 
 
+
     public void actionPerformed(ActionEvent e) {
         SimpleAttributeSet attr = new SimpleAttributeSet();
-
-        if(e.getSource() == popup.getComponent(0)) {
-        	if(textArea.getSelectedText() != null) {
-        		textArea.copy();
-        	}else if(GlobalEnv.textPane.getSelectedText() != null) {
-        		GlobalEnv.textPane.copy();
-        	}else if(GlobalEnv.resultPane.getSelectedText() != null) {
-        		GlobalEnv.resultPane.copy();
-        	}
-        }else if(e.getSource() == popup.getComponent(1)) {
-        	if(GlobalEnv.textPane.getSelectedText() != null) {
-        		GlobalEnv.textPane.cut();
-        	}
-        }else if(e.getSource() == popup.getComponent(2)) {
-            	GlobalEnv.textPane.paste();
-        }
 
 //		if(e.getSource() == Popup.){
 //			System.out.println("ok");
 //		}
         // 削除だったら
-
         if (e.getSource() == GlobalEnv.file_menuItem[0]) {
             // 削除確認ダイヤログ
             int option = JOptionPane.showConfirmDialog(this, treefileName
@@ -2297,34 +2231,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
     @Override
     public void mousePressed(MouseEvent arg0) {
+
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
-
-		if(e.getSource().equals(GlobalEnv.textPane)) {
-			if(SwingUtilities.isRightMouseButton(e)) {
-				popup.getComponent(1).setVisible(true);
-				popup.getComponent(2).setVisible(true);
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-			return ;
-		}else if(e.getSource().equals(textArea)){
-			if(SwingUtilities.isRightMouseButton(e)) {
-				popup.getComponent(1).setVisible(false);
-				popup.getComponent(2).setVisible(false);
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-    		return ;
-		}else if(e.getSource().equals(GlobalEnv.resultPane)){
-			if(SwingUtilities.isRightMouseButton(e)) {
-				popup.getComponent(1).setVisible(false);
-				popup.getComponent(2).setVisible(false);
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-    		return ;
-		}
 
         JTree tree = (JTree) e.getSource();
         if(tree.getRowForLocation(e.getX(), e.getY()) == -1){

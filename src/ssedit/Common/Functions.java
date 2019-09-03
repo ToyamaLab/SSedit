@@ -1,11 +1,9 @@
 package ssedit.Common;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,8 +16,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -31,9 +27,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 
 import ssedit.FrontEnd;
 import ssedit.Caret.CaretState;
@@ -63,8 +56,8 @@ public class Functions {
 			return true;
 		return false;
 	}
-	
-	
+
+
 	public static String readFile(String filename) {
 		BufferedReader br = null;
 		try {
@@ -148,7 +141,7 @@ public class Functions {
 			return false;
 		}
 	}
-	
+
 	public static void reflectConfig(){
 		String driver = has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "driver");
 		String db = has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "db");
@@ -161,8 +154,8 @@ public class Functions {
 		GlobalEnv.config_userField.setText(user);
 //		GlobalEnv.config_outdirField.setText(outdir);
 	}
-	
-	
+
+
 	public static String getWorkingDir(){
 		String workingDir = new File(GlobalEnv.EXE_FILE_PATH).getAbsolutePath(); // 実行jarファイルの絶対パスを取得
 //		if(isWindows()){
@@ -252,7 +245,7 @@ public class Functions {
 			outdir = outdir.replace("~" + GlobalEnv.OS_FS, GlobalEnv.USER_HOME + GlobalEnv.OS_FS); // "~(チルダ)"を含んでいた場合は、USER_HOMEへ変換
 		return outdir;
 	}
-	
+
 	// filenameが「target=」を持っている場合、その右辺の値を返す
 	public static String has(String filename, String target) {
 		String ret = "";
@@ -277,7 +270,7 @@ public class Functions {
 
 		return ret;
 	}
-	
+
 	// 作業フォルダ内にある指定したファイルを読み込む
 	public static String myfileReader(String filename){
 		String str = "";
@@ -304,7 +297,7 @@ public class Functions {
 			return "";
 		}
 	}
-	
+
 	// 指定されたPathを開く（Pathによって起動するソフトウェアが変わる）
 	// URL・File・フォルダ等を開くことが出来る
 	public static void open(String Path) {
@@ -334,7 +327,7 @@ public class Functions {
 				if (isLinux()) { // Linuxだった場合
 					if (new File(Path).isFile()){
 						// ファイルならそれをブラウザで開く
-						// 現状では実習専用 コマンドを指定してLinuxのbashシェルスクリプトから実行してブラウザを起動		
+						// 現状では実習専用 コマンドを指定してLinuxのbashシェルスクリプトから実行してブラウザを起動
 						try {
 							Runtime.getRuntime().exec("firefox " + Path);
 							// System.exit(0);
@@ -374,7 +367,7 @@ public class Functions {
 			// JOptionPane.showMessageDialog(null,"\""+Path+"\" does not exist.","Open error",JOptionPane.WARNING_MESSAGE);
 		}
 	}
-	
+
 	// 先頭に~がついていたらUSER_HOMEに変換して返す
 	public static String change(String str) {
 		int length = str.length();
@@ -384,7 +377,7 @@ public class Functions {
 		}
 		return str;
 	}
-	
+
 	public static void deleteFile(String folderPath, String fileName){
 		File file = new File(folderPath + GlobalEnv.OS_FS +fileName);
 		if(file.exists()){
@@ -401,7 +394,7 @@ public class Functions {
         GlobalEnv.gbl.setConstraints(c2, gbc);
         p.add(c2);
     }
-	
+
 	// FROM句の始まる場所を取得
 	public static void searchFrom(){
 		String data = GlobalEnv.textPane.getText();
@@ -420,7 +413,7 @@ public class Functions {
 			}
 		}
 	}
-	
+
 	// WHERE句の始まる場所を取得
 	public static void searchWhere(){
 		// from句までの文字数
@@ -441,7 +434,7 @@ public class Functions {
 			}
 		}
 	}
-	
+
 	// 編集中クエリに存在するテーブルを取得
 	public static void getTeble() {
 //		// ハッシュセットを利用して重複テーブルを削除
@@ -452,7 +445,7 @@ public class Functions {
 
 		Functions.searchFrom();
 		Functions.searchWhere();
-		
+
 		String data = GlobalEnv.textPane.getText();
 		data = data.substring(GlobalEnv.fromEnd, GlobalEnv.whereStart);
 //		String regex = "\\s(?i)from\\s";
@@ -485,7 +478,7 @@ public class Functions {
 			String alias = "";
 			strAry[i] = strAry[i].trim();
 //			System.out.println("strAry[i]=" + strAry[i]);
-			
+
 			// エイリアスが設定されていたら
 			if(strAry[i].contains(" ")){
 				alias = strAry[i].substring(strAry[i].lastIndexOf(" ")).trim();
@@ -502,7 +495,7 @@ public class Functions {
 			}
 			GlobalEnv.alias_array.add(alias);
 			GlobalEnv.currentTable_array.add(strAry[i]);
-			
+
 			// エイリアスが設定されていたらテーブル名以降カット
 //			if (strAry[i].lastIndexOf(" ") != -1) {
 //				strAry[i] = strAry[i].substring(0, strAry[i].lastIndexOf(" ")).trim();
@@ -525,7 +518,7 @@ public class Functions {
 ////                System.out.println(GlobalEnv.tabledata.get(name));
 //        }
 	}
-	
+
 	// 属性を取り出して配列に入れなおし、ポップアップを生成
 	public static void insertAttriburtes(List<String> list) {
 		TreeSet<String> attribute = new TreeSet<String>();
@@ -559,20 +552,20 @@ public class Functions {
 //            System.out.println(it.next());
         }
         GlobalEnv.tableattribute_popup.removeAll();
-        
+
         GlobalEnv.attribute_menuItem = FrontEnd.setMenuItem(GlobalEnv.tableattribute_popup, GlobalEnv.attribute_array, GlobalEnv.attribute_array.size());
 	}
-	
+
 	// pの位置の文字が半角英数値(0～9、a～z、A～Z、_)かどうかを判定
 	public static boolean checkChar(int pos, String regex){
 		try {
 			// キャレットの位置の1つ前の文字を取得
 			String s = GlobalEnv.textPane.getText(pos, 1);
-			
+
 //			String regex = "\\w";
 			Pattern p = Pattern.compile(regex);
 			Matcher m = p.matcher(s);
-			
+
 			if (m.find()) {
 				 return true;
 			} else {
@@ -610,10 +603,10 @@ public class Functions {
 //            System.out.println(it.next());
         }
         GlobalEnv.tableattribute_popup.removeAll();
-        
+
         GlobalEnv.attribute_menuItem = FrontEnd.setMenuItem(GlobalEnv.tableattribute_popup, GlobalEnv.attribute_array, GlobalEnv.attribute_array.size());
 	}
-	
+
 	// キャレットの手前の文字列のエイリアスを解析しそのエイリアスを返す
 	public static String searchAlias(){
 		String alias = "";
@@ -635,19 +628,19 @@ public class Functions {
 		}
 		return alias;
 	}
-	
-	
+
+
 	// 文脈読んで挿入もしくは新しいポップアップ生成
 	// 今後改良して引数追加していけばdecorationやfunctionにも応用できるかも
 	public static JMenuItem[] matchCheck(String str, List<String> array, List<String> array2, List<String> partArray, JMenuItem[] menuItem, JPopupMenu popupMenu) {
 		GlobalEnv.flag = 0;
-	
+
 		String attribute = "";
 		String partattribute = "";
 		int count = 0;
 		array2.clear();
 		partArray.clear();
-		
+
 		// もとの一覧（テーブル、属性など）の数だけ回して開始文字（str）が一致した単語の後半部分を取り出す + 一致した個数（補完候補）をカウント
 		for (int i = 0; i < array.size(); i++) {
 			attribute = array.get(i);
@@ -682,7 +675,7 @@ public class Functions {
 		}
 		return menuItem;
 	}
-	
+
 	public static Rectangle getRect() {
         Rectangle rect = new Rectangle();
         try{
@@ -692,7 +685,7 @@ public class Functions {
         }
         return rect;
     }
-	
+
 	static void checkAttribute(){
 		String text = "";
 		String text2 = "";
@@ -723,7 +716,7 @@ public class Functions {
 //	        System.out.println("start:" + start + "文字列：" + text.substring(start + 1, start + 4));
 	     }
 	}
-	
+
 	// キャレットが装飾演算子"@"の{}内かどうかを判定
 	public static boolean decorationCheck(int p){
 		// キャレットの1つ手前の文字から先頭までさかのぼってチェック
@@ -771,7 +764,7 @@ public class Functions {
 //				System.out.println("end :" + (m.end() + GlobalEnv.searchStart));
 //				System.out.println("group :" + m.group());
 //				System.out.println("--------------------");
-				GlobalEnv.searchStart += m.end(); 
+				GlobalEnv.searchStart += m.end();
 			} else {
 				if(GlobalEnv.searchStart == 0){
 //					System.out.println("検索結果なし");
@@ -788,12 +781,12 @@ public class Functions {
 			// 検索対象の文字列
 			String text = GlobalEnv.textPane.getText();
 			text = text.substring(start);
-			
+
 			if(!GlobalEnv.caseSensitivity[0].isSelected()){
 				text = text.toLowerCase();
 				target = target.toLowerCase();
 			}
-			
+
 			if(text.indexOf(target) != -1){
 				GlobalEnv.textPane.setSelectionStart((text.indexOf(target) + start));
 				GlobalEnv.textPane.setSelectionEnd((text.indexOf(target) + target.length() + start));
@@ -810,7 +803,7 @@ public class Functions {
 				}
 			}
 	}
-	
 
-	
+
+
 }
