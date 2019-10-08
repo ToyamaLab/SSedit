@@ -23,6 +23,7 @@ import javax.swing.text.DefaultStyledDocument;
 
 import ssedit.GUI.History;
 
+
 public class GlobalEnv {
 	// システムのデフォルトのコマンド修飾キーを取得（WindowsならCTRL_MASK, MacOSならMETA_MASKになる）
 	public static int osShortcutKey = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -134,6 +135,9 @@ public class GlobalEnv {
 
 	public static int searchStart = 0;
 
+	//ログ収集フラグ
+	public static boolean loggerFlag = false;
+
 	public static JTextPane textPane = new JTextPane() {
 		// textPaneでも横スクロールが出現
 		@Override
@@ -232,5 +236,15 @@ public class GlobalEnv {
 	public static DefaultComboBoxModel outdirModel = (DefaultComboBoxModel) outdirCombo.getModel();
 	public static final JComboBox urlCombo = History.makeComboBox(Functions.has(USER_HOME + OS_FS + ".ssqltool", "url"));
 	public static DefaultComboBoxModel urlModel = (DefaultComboBoxModel) urlCombo.getModel();
+
+
+	public static void setLoggerFlag(String[] args) {
+		//Default: off
+		for (int i = 0; i < args.length; i++) {
+			if(args[i].equalsIgnoreCase("-logger")) {
+				loggerFlag = true;
+			}
+		}
+	}
 
 }

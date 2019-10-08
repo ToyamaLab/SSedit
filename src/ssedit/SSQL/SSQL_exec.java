@@ -7,9 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
 import ssedit.FrontEnd;
@@ -18,30 +16,43 @@ import ssedit.Common.Functions;
 import ssedit.Common.GlobalEnv;
 
 public class SSQL_exec extends FrontEnd implements Runnable {
-	
+
 //	SSQL_exec() {
 //		super();
 //	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	static StringWriter sWriter; // 出力された文字列を受けとるためのオブジェクト
 	static PrintWriter pWriter; // 出力された文字列を受けとるためのオブジェクト
 	static BufferedReader buffReader; // 標準出力
 	static BufferedReader errorBuffReader; // エラー出力
-	
+
     //SuperSQLの実行
     public static boolean execSuperSQL(String filename, String classPath, JTextPane resultPane, DefaultStyledDocument document) {
         try{
-            String result = doExec(new String[]{
+        	String result = "";
+        	if(GlobalEnv.loggerFlag) {
+            result = doExec(new String[]{
                     "java",
                     "-Dfile.encoding=UTF-8",
                     "-classpath", classPath,
                     "supersql.FrontEnd",
                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
+                    "-logger",
+                    "on",
                     "-f", filename}, resultPane, document);
+        	} else {
+        		result = doExec(new String[]{
+                     "java",
+                     "-Dfile.encoding=UTF-8",
+                     "-classpath", classPath,
+                     "supersql.FrontEnd",
+                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
+                     "-f", filename}, resultPane, document);
+        	}
             if(result.equals("// completed normally //"))    return true;
             else                                             return false;
         }catch(Exception e){
@@ -55,10 +66,18 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 		ssqlExecLogs = "";
 		Functions.createFile(generateFileName, query);
 		try {
-			String result = doExec(new String[] { "java",
+			String result = "";
+			if(GlobalEnv.loggerFlag) {
+			 result = doExec(new String[] { "java",
 					"-Dfile.encoding=UTF-8", "-classpath", libsClassPath,
                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
+					"supersql.FrontEnd", "-logger", "on", "-f", generateFileName}, null, null);
+			} else {
+			result = doExec(new String[] { "java",
+					"-Dfile.encoding=UTF-8", "-classpath", libsClassPath,
+	                 //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
 					"supersql.FrontEnd", "-f", generateFileName}, null, null);
+			}
 			if (result.equals("// completed normally //")) {
 				errorStr[0] = "";
 				errorStr[1] = "";
@@ -72,11 +91,11 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 			return false;
 		}
 	}
-	
+
 
 	/**
 	 * 外部コマンドを実行する。 配列形式で渡すためにラップしてる
-	 * 
+	 *
 	 * @param command
 	 *            実行する外部コマンド
 	 * @return String 外部コマンドが標準出力に出力する実行結果
@@ -89,7 +108,7 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 
 	/**
 	 * 外部コマンドを実行する。
-	 * 
+	 *
 	 * @param commands
 	 *            実行する外部コマンド（空白や引数を渡すための配列形式）
 	 * @return String 外部コマンドが標準出力に出力する実行結果
@@ -118,7 +137,7 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 //			e1.printStackTrace();
 //		}
 		Process proc = rt.exec(commands, null, new File(workingDir));
-		
+
 		// 実行結果の取得用のオブジェクトの作成
 		buffReader = new BufferedReader(new InputStreamReader(
 				proc.getInputStream()));
@@ -149,8 +168,8 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 					resultPane.setCaretPosition(document.getLength());
 
 				}
-				
-			}	
+
+			}
 //			Log.ggg(str);
 //			System.out.println(str);
 
@@ -166,7 +185,7 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 
 	/**
 	 * コマンドの実行結果を読み出す。
-	 * 
+	 *
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {

@@ -98,6 +98,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     public static void main(String[] args) throws IOException,
             InterruptedException {
 //    	System.out.println("XXX");
+    		GlobalEnv.setLoggerFlag(args);
         new FrontEnd();
     }
 
