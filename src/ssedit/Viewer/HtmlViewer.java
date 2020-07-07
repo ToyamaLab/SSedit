@@ -5,13 +5,12 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.JFrame;
+
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
-
-import javax.swing.JFrame;
-
 import ssedit.GUI.Browser;
 
 public class HtmlViewer extends JFrame {
@@ -20,8 +19,8 @@ public class HtmlViewer extends JFrame {
 	int delay2 = 1000;
 	final Dimension d = Toolkit.getDefaultToolkit().getScreenSize(); // 画面全体のサイズ
 	int x = (int) (d.width * 0.4);
-	int y = (int) (d.height * 0.5);	
-	
+	int y = (int) (d.height * 0.5);
+
 //	public static void main(String... args){
 //		HtmlViewer viewer = new HtmlViewer();
 //	}
@@ -60,5 +59,5 @@ public class HtmlViewer extends JFrame {
 	}
 	public static void setValue(){
 		browser.reload();
-	}	
+	}
 }

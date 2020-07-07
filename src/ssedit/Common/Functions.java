@@ -326,6 +326,12 @@ public class Functions {
 			else {
 				if (isLinux()) { // Linuxだった場合
 					if (new File(Path).isFile()){
+						//実習環境用
+						if (Path.contains("public_html")){
+							String[] tmp = Path.split(GlobalEnv.OS_FS, 0);
+							String tmp1 = Path.split("public_html", 0)[1];
+							Path = "http://user.keio.ac.jp/~" + tmp[3] + tmp1;
+						}
 						// ファイルならそれをブラウザで開く
 						// 現状では実習専用 コマンドを指定してLinuxのbashシェルスクリプトから実行してブラウザを起動
 						try {

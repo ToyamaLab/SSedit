@@ -136,7 +136,7 @@ public class GlobalEnv {
 	public static int searchStart = 0;
 
 	//ログ収集フラグ
-	public static boolean loggerFlag = false;
+	public static boolean loggerFlag = true;
 
 	public static JTextPane textPane = new JTextPane() {
 		// textPaneでも横スクロールが出現

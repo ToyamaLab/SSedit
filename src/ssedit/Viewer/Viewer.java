@@ -1,9 +1,12 @@
 package ssedit.Viewer;
 
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
-import javax.swing.*;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.text.Document;
 
 import ssedit.Common.GlobalEnv;
@@ -29,7 +32,7 @@ public class Viewer extends JFrame {
 		setVisible(true);
 	}
 
-	
+
 	public void setValue(){
 		 Document doc = html.getDocument();
 		   doc.putProperty(Document.StreamDescriptionProperty, null);
