@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<functions>
+	<function optional_parameter_restriction="0">
+		<!-- link("Go to google", "http://www.google.fr", in="blind", out="fade") -->
+		<description lang="jp"></description>
+		<description lang="en"></description>
+		<name>link()</name>
+		<required_parameter position="0" type="TFE">content
+		</required_parameter>
+		<required_parameter position="1" type="HMTLC0">href
+		</required_parameter>
+		<decoration key="in">
+			<value>fade</value>
+			<value>blink</value>
+		</decoration>
+		<decoration key="out">
+			<value>fade</value>
+			<value>blink</value>
+		</decoration>
+		<decoration key="panel"></decoration>
+		<decoration key="dispdiv" any="1"></decoration>
+		<decoration key="dragto" any="1"></decoration>
+	</function>
+	<function optional_parameter_restriction="0">
+		<description lang="jp"></description>
+		<description lang="en"></description>
+		<name>youtube()</name>
+		<required_parameter position="0" name="href">
+			<type>HTMLC0</type>
+		</required_parameter>
+		<decoration key="width" any="1" default="560"></decoration>
+		<decoration key="height" any="1" default="315"></decoration>
+	</function>
+
+	<function optional_parameter_restriction="0">
+		<description lang="jp"></description>
+		<description lang="en"></description>
+		<name>video()</name>
+		<required_parameter position="0" name="href">
+			<type>HTMLC1</type>
+			<type>HTMLC0</type>
+		</required_parameter>
+	</function>
+	
+	<function optional_parameter_restriction="0">
+  		<description lang="jp"></description>
+		<description lang="en"></description>
+		<name>meter()</name>
+		<required_parameter position="0" name="href">
+			<type>HTMLAttribute</type>
+		</required_parameter>
+		<decoration key="width" any="1" default="200"></decoration>
+		<decoration key="height" any="1" default="40"></decoration>
+		<decoration key="m_width" any="1" default="170"></decoration>
+		<decoration key="m_height" any="1" default="25"></decoration>
+		<decoration key="max" any="1" default="100"></decoration>
+		<decoration key="min" any="1" default="0"></decoration>
+		<decoration key="low" any="1" default="30"></decoration>
+		<decoration key="high" any="1" default="70"></decoration>
+		<decoration key="max_color" any="1" default="#FF0000"></decoration>
+		<decoration key="low_color" any="1" default="#00FFFF"></decoration>
+		<decoration key="high_color" any="1" default="#00FFFF"></decoration>
+		<decoration key="mid_color" any="1" default="#00FF00"></decoration>
+		<decoration key="bg_color" any="1" default="#CCCCCC"></decoration>
+	</function>
+	
+	<function optional_parameter_restriction="0">
+		<name>null()</name>
+	</function>
+	<function optional_parameter_restriction="0">
+		<name>embed()</name>
+	</function>
+	<function optional_parameter_restriction="0">
+		<name>anchor()</name>
+	</function>
+	<function optional_parameter_restriction="0">
+		<name>sum[]</name>
+	</function>
+	<function optional_parameter_restriction="0">
+		<name>avg[]</name>
+	</function>
+	<function optional_parameter_restriction="0">
+		<name>min[]</name>
+	</function>
+	<function optional_parameter_restriction="0">
+		<name>max[]</name>
+	</function>
+	<function optional_parameter_restriction="0">
+		<name>count[]</name>
+	</function>
+	<function optional_parameter_restriction="0">
+		<name>mail()</name>
+	</function>
+</functions>

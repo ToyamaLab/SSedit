@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<medias>
+	<media name="HTML">
+		<connector dimension="0">+</connector>
+		<connector dimension="1">,</connector>
+		<connector dimension="2">!</connector>
+		<connector dimension="3">%</connector>
+		<grouper dimension="1">[],</grouper>
+		<grouper dimension="2">[]!</grouper>
+		<grouper dimension="3">[]%</grouper>
+	</media>
+	<media name="Mobile_HTML5">
+		<connector dimension="0">+</connector>
+		<connector dimension="1">,</connector>
+		<connector dimension="2">!</connector>
+		<connector dimension="3">%</connector>
+		<grouper dimension="1">[],</grouper>
+		<grouper dimension="2">[]!</grouper>
+		<grouper dimension="3">[]%</grouper>
+	</media>
+	<media name="XML">
+		<connector dimension="0">,</connector>
+		<grouper dimension="0">,</grouper>
+	</media>
+	<media name="PDF">
+		<connector dimension="1">,</connector>
+		<connector dimension="2">!</connector>
+		<connector dimension="3">%</connector>
+		<grouper dimension="1">[],</grouper>
+		<grouper dimension="2">[]!</grouper>
+		<grouper dimension="3">[]%</grouper>
+	</media>
+	<media name="SWF">
+		<connector dimension="1">,</connector>
+		<connector dimension="2">!</connector>
+		<connector dimension="3">%</connector>
+		<connector dimension="4">#</connector>
+		<grouper dimension="1">[],</grouper>
+		<grouper dimension="2">[]!</grouper>
+		<grouper dimension="3">[]%</grouper>
+		<grouper dimension="4">[]#</grouper>
+	</media>
+	<media name="CSV">
+		<connector dimension="0">,</connector>
+		<grouper dimension="0">,</grouper>
+	</media>
+	<media name="X3D">
+		<connector dimension="0">+</connector>
+		<connector dimension="1">,</connector>
+		<connector dimension="2">!</connector>
+		<connector dimension="3">%</connector>
+		<grouper dimension="1">[],</grouper>
+		<grouper dimension="2">[]!</grouper>
+		<grouper dimension="3">[]%</grouper>
+	</media>
+</medias>
