@@ -127,7 +127,7 @@ public class FileSearch extends JFrame implements TreeCellRenderer, MouseListene
 						String query = "";
 						try {
 							BufferedReader br = new BufferedReader(new InputStreamReader(
-									new FileInputStream(files[i]), "UTF-8"));
+									new FileInputStream(files[i]), GlobalEnv.getEncoding()));
 							String line;
 							while ((line = br.readLine()) != null) {
 								query += line + "\n";

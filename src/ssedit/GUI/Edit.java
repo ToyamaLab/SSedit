@@ -23,8 +23,8 @@ import ssedit.Common.GlobalEnv;
 
 public class Edit extends JPanel {
 	// とりあえずの設定値
-	public int size = 12;
-	public Font defaultEditFont = new Font("MSゴシック", Font.PLAIN, size);
+	public static int size = 12;
+	public static Font defaultEditFont = new Font("MSゴシック", Font.PLAIN, size);
 	public static JTextPane linePane;
 	// 現在の行数
 	private static int line;
@@ -105,7 +105,7 @@ public class Edit extends JPanel {
 		return doc.getDefaultRootElement().getElementIndex(doc.getLength()) + 1;
 	}
 
-	public void setText() {
+	public static void setText() {
 		defaultEditFont = new Font("MSゴシック", Font.PLAIN, size);
 		GlobalEnv.textPane.setFont(defaultEditFont);
 		GlobalEnv.textPane.setText(GlobalEnv.textPane.getText());

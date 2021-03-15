@@ -132,9 +132,12 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JTextArea textArea = new JTextArea("ツリーノードをシングルクリックでここにViewを表示" + GlobalEnv.OS_LS
             + "ダブルクリックで上のエディタで編集");
 
-    static JComboBox tabCombo = null, queryCombo = null;
+    public static JComboBox tabCombo = null;
+	static JComboBox encoCombo = null;
+	static JComboBox queryCombo = null;
 	public static JComboBox driverCombo;
     DefaultComboBoxModel tabsizeModel = new DefaultComboBoxModel();
+    DefaultComboBoxModel encosizeModel = new DefaultComboBoxModel();
     static DefaultComboBoxModel querycomboModel = new DefaultComboBoxModel();
 
 
@@ -185,9 +188,10 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JLabel foldername_label = new JLabel("フォルダ名：");
     JLabel tabLabel = new JLabel("インデント幅：");
     JLabel langLabel = new JLabel("　　　　　　　　　Language：");
+    JLabel encodingLabel = new JLabel("文字コード：");
     JLabel concernLabel = new JLabel("成功時のファイル・フォルダ表示：");
     JLabel manualLabel = new JLabel("SSQLマニュアル：");
-    JLabel config_driverLabel = new JLabel("ドライバ名*：");
+    JLabel config_driverLabel = new JLabel("ドライバ*：");
     JLabel config_hostLabel = new JLabel("ホスト：");
     JLabel config_dbLabel = new JLabel("データベース名：");
     JLabel config_portLabel = new JLabel("ポート番号：");
@@ -259,7 +263,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     public static String currentfileName = "";
 //	String currentData = "";
 
-    int tabSize = 3;
+    public static int tabSize = 3;
 //	int currentState = 0;
     static int i = 0;
     static Integer decoration_Count = new Integer(0);// 装飾子リストなどのファイル内の行数、つまり装飾子などの数
@@ -279,7 +283,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     private final JButton button_plus = new JButton("＋");
     private final JButton button_minus = new JButton("ー");
     private final JLabel label = new JLabel("クエリ記入欄の文字サイズ ：");
-    private final JLabel label_size = new JLabel("12");
+    public static JLabel label_size = new JLabel("12");
     private final JButton saveButton = new JButton("保存");
 
 
@@ -314,11 +318,12 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         GlobalEnv.resultDoc2 = new DefaultStyledDocument(resultSc2);
         GlobalEnv.resultPane2.setDocument(GlobalEnv.resultDoc2);
 
+        // ドライバ
         driverCombo = new JComboBox(GlobalEnv.driverModel);
 
 
         // 前回の情報（開いていたフォルダ・ファイル）を読み込んで反映
-        reflectSSQLtoolInfo();
+        Functions.reflectSSQLtoolInfo();
         // クエリ新規作成のコンボボックス
         querycomboModel = new DefaultComboBoxModel((Vector)combodata);
         queryCombo = new JComboBox(querycomboModel);
@@ -333,8 +338,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         tabCombo.addItemListener(this);
         tabCombo.setSelectedIndex(2);
         tabSize = 3;
-
         CaretState.changeTabSize(tabSize, GlobalEnv.textPane, GlobalEnv.doc);
+        
+        // 文字コードのコンボボックス
+        encoCombo = new JComboBox(GlobalEnv.encodingModel);
+
 
         /* CaretListenerをセット */
         GlobalEnv.textPane.addCaretListener(this);
@@ -696,12 +704,16 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         lang.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         JPanel tab = new JPanel();
-
         tabCombo.setPreferredSize(new Dimension(60, 30));
         // tabCombo.addActionListener(this);
-
         tab.add(tabLabel);
         tab.add(tabCombo);
+        
+        JPanel enco = new JPanel();
+        enco.add(encodingLabel);
+        enco.add(encoCombo);
+        
+
 
         GlobalEnv.radio2[0].addChangeListener(this); // ラジオボタンにチェンジリスナーを登録
         GlobalEnv.radio2[1].addChangeListener(this);
@@ -779,9 +791,10 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 //		JPanel settingPanel = new JPanel();
         Functions.addPanel(settingPanel, tab, 0, 0, 1, 1);
         Functions.addPanel(settingPanel, lang, 0, 1, 1, 1);
-        Functions.addPanel(settingPanel, group1, 0, 2, 1, 1);
-        Functions.addPanel(settingPanel, exitPanel3, 0, 3, 1, 1);
-        Functions.addPanel(settingPanel, textSize, 0, 4, 1, 1);
+        Functions.addPanel(settingPanel, enco, 0, 2, 1, 1);
+        Functions.addPanel(settingPanel, group1, 0, 3, 1, 1);
+        Functions.addPanel(settingPanel, exitPanel3, 0, 4, 1, 1);
+        Functions.addPanel(settingPanel, textSize, 0, 5, 1, 1);
 
 //		Common.addPanel(settingPanel, exit_button3, 0, 4, 1, 1);
 //		Common.addPanel(settingPanel, button3, 0, 5, 1, 1);
@@ -1515,7 +1528,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             if(!new File(GlobalEnv.folderPath + GlobalEnv.OS_FS + currentfileName).isFile()){
                 filePath = "";
             }
-            saveSSQLtoolInfo(GlobalEnv.folderPath, filePath);
+            Functions.saveSSQLtoolInfo(GlobalEnv.folderPath, filePath);
             System.exit(0);
         } else {
             int option = JOptionPane.showConfirmDialog(this,
@@ -1524,11 +1537,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             if(option == 0){
                 button4.doClick();
                 button3.doClick();
-                saveSSQLtoolInfo(GlobalEnv.folderPath, GlobalEnv.folderPath + GlobalEnv.OS_FS + currentfileName);
+                Functions.saveSSQLtoolInfo(GlobalEnv.folderPath, GlobalEnv.folderPath + GlobalEnv.OS_FS + currentfileName);
                 System.exit(0);
             } else if(option == 1) {
                 button3.doClick();
-                saveSSQLtoolInfo(GlobalEnv.folderPath, GlobalEnv.folderPath + GlobalEnv.OS_FS + currentfileName);
+                Functions.saveSSQLtoolInfo(GlobalEnv.folderPath, GlobalEnv.folderPath + GlobalEnv.OS_FS + currentfileName);
                 System.exit(0);
             } else if(option == 2) {
                 return;
@@ -1850,87 +1863,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
 
 
-    // 閉じる前に、開いていたクエリ名・ディレクトリ等の情報を、ホームの「.ssqltool」へ保存
-    public void saveSSQLtoolInfo(String folderPath1, String fileName1) {
-        // GlobalEnv.folderPath1: タブ1のフォルダ
-        // fileName1: タブ1のファイル名
-        // GlobalEnv.folderPath2: タブ2のフォルダ
-        String s = "";
-        s += "folderPath1=" + folderPath1 + "" + GlobalEnv.OS_LS + "";
-        s += "fileName1=" + fileName1 + "" + GlobalEnv.OS_LS + "";
-        s += "radio1Selected=" + GlobalEnv.radio1Selected + "" + GlobalEnv.OS_LS + "";
-        s += "radio2Selected=" + GlobalEnv.radio2Selected + "" + GlobalEnv.OS_LS + "";
-        s += "tabSize=" + tabSize + "" + GlobalEnv.OS_LS + "";
-        s += "url=" + GlobalEnv.urlCombo.getEditor().getItem() + "" + GlobalEnv.OS_LS + "";
-        String folderHistory = History.saveHistory(GlobalEnv.folderPath, GlobalEnv.folderCombo);
-        s += "folderHistory=" + folderHistory + "" + GlobalEnv.OS_LS + "";
-        String outdirHistory = History.saveHistory(GlobalEnv.outdirPath, GlobalEnv.outdirCombo);
-        s += "outdirHistory=" + outdirHistory + "" + GlobalEnv.OS_LS + "";
-        String urlHistory = History.saveHistory((String)GlobalEnv.urlCombo.getEditor().getItem(), GlobalEnv.urlCombo);
-        s += "urlHistory=" + urlHistory + "" + GlobalEnv.OS_LS + "";
 
-        Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.ssql");
-        Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.html");
-        Functions.deleteFile(GlobalEnv.outdirPath, ".errorlog.txt");
-
-        Functions.createFile(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool", s);
-    }
-
-    // 前回の情報（開いていたフォルダ・ファイル）を、ホームの「.ssqltool」から読み込んで反映
-    public void reflectSSQLtoolInfo() {
-        String fP1 = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool", "folderPath1");
-        String fN1 = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool", "fileName1");
-
-        if (!fP1.equals("") && new File(fP1).exists()){
-            GlobalEnv.folderPath = fP1;
-        }
-        if (!fN1.equals("") && new File(fN1).exists()) {
-            filenameLabel.setText(new File(fN1).getName());
-            GlobalEnv.textPane.setText(Functions.readFile(fN1));
-            currentfileName = new File(fN1).getName();
-            currentfileData = Functions.readFile(fN1);
-        } else {
-            if (GlobalEnv.radio2Selected == 0){
-                GlobalEnv.textPane.setText("");
-            }
-            else{
-                GlobalEnv.textPane.setText("");
-            }
-
-        }
-        try {
-            GlobalEnv.radio1Selected = Integer.parseInt(Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS
-                    + ".ssqltool", "radio1Selected"));
-            GlobalEnv.radio2Selected = Integer.parseInt(Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS
-                    + ".ssqltool", "radio2Selected"));
-        } catch (Exception e) {
-            GlobalEnv.radio1Selected = 0;
-            GlobalEnv.radio2Selected = 0;
-        }
-        try {
-            tabSize = Integer.parseInt(Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool",
-                    "tabSize"));
-            tabCombo.setSelectedIndex(tabSize - 1);
-            CaretState.changeTabSize(tabSize, GlobalEnv.textPane, GlobalEnv.doc);
-        } catch (Exception e) {
-            tabSize = 3;
-        }
-//		GlobalEnv.url_textField.setText(Common.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS
-//					+ ".ssqltool", "url"));
-        String[] urlStr = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool", "urlHistory").split(",");
-        for(int i = 0; i < urlStr.length; i++){
-            GlobalEnv.urlModel.addElement(urlStr[i]);
-        }
-        String[] folderStr = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool", "folderHistory").split(",");
-        for(int i = 0; i < folderStr.length; i++){
-            GlobalEnv.folderModel.addElement(folderStr[i]);
-        }
-        String[] outdirStr = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool", "outdirHistory").split(",");
-        for(int i = 0; i < outdirStr.length; i++){
-            GlobalEnv.outdirModel.addElement(outdirStr[i]);
-        }
-        Edit.setLinePane();
-    }
 
 
 
@@ -2282,6 +2215,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             exit_button3.setText("終了");
             manualLabel.setText("SSQLマニュアル：");
             tabLabel.setText("インデント幅：");
+            encodingLabel.setText("文字コード：");
             GlobalEnv.radio1[0].setText("あり");
             GlobalEnv.radio1[1].setText("なし");
         }
@@ -2304,6 +2238,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             exit_button3.setText("Exit");
             manualLabel.setText("SSQL Manual：");
             tabLabel.setText("Indent：");
+            encodingLabel.setText("Encoding：");
             GlobalEnv.radio1[0].setText("Yes");
             GlobalEnv.radio1[1].setText("No");
         }

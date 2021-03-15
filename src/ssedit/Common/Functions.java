@@ -33,6 +33,7 @@ import com.ibm.db2.jcc.am.v;
 
 import ssedit.FrontEnd;
 import ssedit.Caret.CaretState;
+import ssedit.GUI.Edit;
 import ssedit.GUI.History;
 
 //import com.mysql.jdbc.jdbc2.optional.SuspendableXAConnection;
@@ -65,7 +66,7 @@ public class Functions {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(
-					filename), "UTF-8"));
+					filename), GlobalEnv.getEncoding()));
 			StringBuffer sb = new StringBuffer();
 			int c;
 			while ((c = br.read()) != -1) {
@@ -92,7 +93,7 @@ public class Functions {
 //			s = s.replaceAll(GlobalEnv.OS_LS + "$", ""); // 末尾の改行コードを削除
 			PrintWriter pw;
 			pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(filename), "UTF-8")));
+					new FileOutputStream(filename), GlobalEnv.getEncoding())));
 			pw.println(s);
 			pw.close();
 			return true;
@@ -100,19 +101,25 @@ public class Functions {
 			return false;
 		}
 	}
+	
+	/******************************************************************************************************************/
+	 /*
+	 * .ssql 保存/反映
+	 */
+	//.ssql 保存
 	public static boolean createConfig(){
+		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+		
 		String driver = "";
 		String db = "";
 		String host = "";
 		String port = "";
-
 		String sqlserver_instance = "";
 		String sqlserver_options = "";
-		
-		
 		String user = "";
 		String password = "";
 		String outdir = "";
+		
 		String s = "";
 		if(!GlobalEnv.driverModel.getSelectedItem().equals("")){
 			driver = "driver=" + (String)GlobalEnv.driverModel.getSelectedItem();
@@ -154,12 +161,13 @@ public class Functions {
 			GlobalEnv.outdirPath = (String) GlobalEnv.outdirModel.getSelectedItem();
 			s += GlobalEnv.OS_LS + outdir;
 		}
+		
 		History.addItem(GlobalEnv.urlCombo, (String)GlobalEnv.urlCombo.getEditor().getItem(), 5);
 		try {
 //			String s = driver + GlobalEnv.OS_LS + db + GlobalEnv.OS_LS + host + GlobalEnv.OS_LS + user + GlobalEnv.OS_LS + outdir;
 			PrintWriter pw;
 			pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile), "UTF-8")));
+					new FileOutputStream(config_fn), GlobalEnv.getEncoding())));
 			pw.println(s);
 			pw.close();
 			return true;
@@ -167,7 +175,7 @@ public class Functions {
 			return false;
 		}
 	}
-
+	// .ssql 反映
 	public static void reflectConfig(){
 		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
 		
@@ -181,6 +189,107 @@ public class Functions {
 		GlobalEnv.config_passwordField.setText(has(config_fn, "password"));
 		//GlobalEnv.outdirCombo.setSelectedItem(has(config_fn, "outdir"));		//TODO
 	}
+	
+	/*
+	 * .ssqltool 保存/反映
+	 */
+	static String config_fn_ssqltool = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool";
+	// .ssqltool 保存
+    // 閉じる前に、開いていたクエリ名・ディレクトリ等の情報を、ホームの「.ssqltool」へ保存
+    public static void saveSSQLtoolInfo(String folderPath1, String fileName1) {
+        // GlobalEnv.folderPath1: タブ1のフォルダ
+        // fileName1: タブ1のファイル名
+        // GlobalEnv.folderPath2: タブ2のフォルダ
+        String s = "";
+        s += "folderPath1=" + folderPath1 + "" + GlobalEnv.OS_LS + "";
+        s += "fileName1=" + fileName1 + "" + GlobalEnv.OS_LS + "";
+        s += "radio1Selected=" + GlobalEnv.radio1Selected + "" + GlobalEnv.OS_LS + "";
+        s += "radio2Selected=" + GlobalEnv.radio2Selected + "" + GlobalEnv.OS_LS + "";
+        s += "tabSize=" + FrontEnd.tabSize + "" + GlobalEnv.OS_LS + "";
+        s += "url=" + GlobalEnv.urlCombo.getEditor().getItem() + "" + GlobalEnv.OS_LS + "";
+        String folderHistory = History.saveHistory(GlobalEnv.folderPath, GlobalEnv.folderCombo);
+        s += "folderHistory=" + folderHistory + "" + GlobalEnv.OS_LS + "";
+        String outdirHistory = History.saveHistory(GlobalEnv.outdirPath, GlobalEnv.outdirCombo);
+        s += "outdirHistory=" + outdirHistory + "" + GlobalEnv.OS_LS + "";
+        String urlHistory = History.saveHistory((String)GlobalEnv.urlCombo.getEditor().getItem(), GlobalEnv.urlCombo);
+        s += "urlHistory=" + urlHistory + "" + GlobalEnv.OS_LS + "";
+		if(!GlobalEnv.encodingModel.getSelectedItem().equals("")){
+			s += "encoding=" + (String)GlobalEnv.encodingModel.getSelectedItem() + "" + GlobalEnv.OS_LS + "";
+		}
+		if(Edit.size > 0 ){
+			s += "text_size=" + Edit.size + "" + GlobalEnv.OS_LS + "";
+		}
+
+        Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.ssql");
+        Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.html");
+        Functions.deleteFile(GlobalEnv.outdirPath, ".errorlog.txt");
+        Functions.createFile(config_fn_ssqltool, s);
+    }
+    // .ssqltool 反映
+    // 前回の情報（開いていたフォルダ・ファイル）を、ホームの「.ssqltool」から読み込んで反映
+    public static void reflectSSQLtoolInfo() {
+        String fP1 = Functions.has(config_fn_ssqltool, "folderPath1");
+        String fN1 = Functions.has(config_fn_ssqltool, "fileName1");
+
+        if (!fP1.equals("") && new File(fP1).exists()){
+            GlobalEnv.folderPath = fP1;
+        }
+        if (!fN1.equals("") && new File(fN1).exists()) {
+            FrontEnd.filenameLabel.setText(new File(fN1).getName());
+            GlobalEnv.textPane.setText(Functions.readFile(fN1));
+            FrontEnd.currentfileName = new File(fN1).getName();
+            FrontEnd.currentfileData = Functions.readFile(fN1);
+        } else {
+            if (GlobalEnv.radio2Selected == 0){
+                GlobalEnv.textPane.setText("");
+            }
+            else{
+                GlobalEnv.textPane.setText("");
+            }
+
+        }
+        try {
+            GlobalEnv.radio1Selected = Integer.parseInt(Functions.has(config_fn_ssqltool, "radio1Selected"));
+            GlobalEnv.radio2Selected = Integer.parseInt(Functions.has(config_fn_ssqltool, "radio2Selected"));
+        } catch (Exception e) {
+            GlobalEnv.radio1Selected = 0;
+            GlobalEnv.radio2Selected = 0;
+        }
+        try {
+            FrontEnd.tabSize = Integer.parseInt(Functions.has(config_fn_ssqltool, "tabSize"));
+            FrontEnd.tabCombo.setSelectedIndex(FrontEnd.tabSize - 1);
+            CaretState.changeTabSize(FrontEnd.tabSize, GlobalEnv.textPane, GlobalEnv.doc);
+        } catch (Exception e) {
+        	FrontEnd.tabSize = 3;
+        }
+//		GlobalEnv.url_textField.setText(Common.has(config_fn_ssqltool, "url"));
+        String[] urlStr = Functions.has(config_fn_ssqltool, "urlHistory").split(",");
+        for(int i = 0; i < urlStr.length; i++){
+            GlobalEnv.urlModel.addElement(urlStr[i]);
+        }
+        String[] folderStr = Functions.has(config_fn_ssqltool, "folderHistory").split(",");
+        for(int i = 0; i < folderStr.length; i++){
+            GlobalEnv.folderModel.addElement(folderStr[i]);
+        }
+        String[] outdirStr = Functions.has(config_fn_ssqltool, "outdirHistory").split(",");
+        for(int i = 0; i < outdirStr.length; i++){
+            GlobalEnv.outdirModel.addElement(outdirStr[i]);
+        }
+        if (!has(config_fn_ssqltool, "encoding").equals("")) {
+    		GlobalEnv.encodingModel.setSelectedItem(has(config_fn_ssqltool, "encoding"));	
+		} else {
+			GlobalEnv.encodingModel.setSelectedItem(GlobalEnv.encoding_comboData[0]);
+		}
+		try {
+			int text_size = Integer.parseInt(has(config_fn_ssqltool, "text_size"));
+			Edit.size = text_size;
+			Edit.setText();
+      		FrontEnd.label_size.setFont(Edit.defaultEditFont);
+      		FrontEnd.label_size.setText(Edit.size+"");
+		} catch (Exception e) { }
+        Edit.setLinePane();
+    }
+    /******************************************************************************************************************/
 
 
 	public static String getWorkingDir(){
@@ -265,7 +374,8 @@ public class Functions {
 
 	// 生成されたファイルの出力先を返す
 	public static String getOutdir(String folder) {
-		String outdir = change(has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "outdir"));
+		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+		String outdir = change(has(config_fn, "outdir"));
 		if (outdir.equals(""))
 			outdir = folder;
 		else
@@ -286,7 +396,7 @@ public class Functions {
 				targetMap = file_targetMap.get(fn);
 			}else{
 				// 初回のみ ファイル読み込み
-				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), GlobalEnv.getEncoding()));
 				String line;
 				while ((line = br.readLine()) != null) {
 					if(line.contains("=")){
@@ -314,8 +424,8 @@ public class Functions {
 		if(!filename.equals("")){
 		try {
 			// ファイルから読み込む仕組みを作成
-			BufferedReader br = new BufferedReader(new FileReader(
-					GlobalEnv.folderPath + GlobalEnv.OS_FS + filename));
+//			BufferedReader br = new BufferedReader(new FileReader(GlobalEnv.folderPath + GlobalEnv.OS_FS + filename));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(GlobalEnv.folderPath + GlobalEnv.OS_FS + filename), GlobalEnv.getEncoding()));
 			// 1行分の読み込んだデータを格納する変数
 			String temp = "";
 			// 行が存在する間ループする

@@ -37,7 +37,7 @@ public class SSQL_exec extends FrontEnd implements Runnable {
         	if(GlobalEnv.loggerFlag) {
             result = doExec(new String[]{
                     "java",
-                    "-Dfile.encoding=UTF-8",
+                    "-Dfile.encoding="+GlobalEnv.getEncoding(),
                     "-classpath", classPath,
                     "supersql.FrontEnd",
                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
@@ -47,7 +47,7 @@ public class SSQL_exec extends FrontEnd implements Runnable {
         	} else {
         		result = doExec(new String[]{
                      "java",
-                     "-Dfile.encoding=UTF-8",
+                     "-Dfile.encoding="+GlobalEnv.getEncoding(),
                      "-classpath", classPath,
                      "supersql.FrontEnd",
                      //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
@@ -69,12 +69,12 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 			String result = "";
 			if(GlobalEnv.loggerFlag) {
 			 result = doExec(new String[] { "java",
-					"-Dfile.encoding=UTF-8", "-classpath", libsClassPath,
+					"-Dfile.encoding="+GlobalEnv.getEncoding(), "-classpath", libsClassPath,
                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
 					"supersql.FrontEnd", "-logger", "on", "-f", generateFileName}, null, null);
 			} else {
 			result = doExec(new String[] { "java",
-					"-Dfile.encoding=UTF-8", "-classpath", libsClassPath,
+					"-Dfile.encoding="+GlobalEnv.getEncoding(), "-classpath", libsClassPath,
 	                 //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
 					"supersql.FrontEnd", "-f", generateFileName}, null, null);
 			}
@@ -140,9 +140,9 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 
 		// 実行結果の取得用のオブジェクトの作成
 		buffReader = new BufferedReader(new InputStreamReader(
-				proc.getInputStream()));
+				proc.getInputStream(), GlobalEnv.getEncoding()));
 		errorBuffReader = new BufferedReader(new InputStreamReader(
-				proc.getErrorStream()));
+				proc.getErrorStream(), GlobalEnv.getEncoding()));
 		sWriter = new StringWriter();
 		pWriter = new PrintWriter(sWriter);
 

@@ -12,6 +12,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -63,7 +64,8 @@ public class GlobalEnv {
 	public static JTextField config_instanceField = new JTextField();	// goto 20200728  SQL Server 
 	public static JTextField config_optionsField = new JTextField();	// goto 20200728  SQL Server 
 	public static JTextField config_userField = new JTextField();
-	public static JTextField config_passwordField = new JTextField();
+//	public static JTextField config_passwordField = new JTextField();
+	public static JTextField config_passwordField = new JPasswordField();
 //	static JTextField config_outdirField = new JTextField();
 //	static JTextField url_textField = new JTextField();
 
@@ -134,8 +136,17 @@ public class GlobalEnv {
 	// クエリが裏側で実行可能な状態であるかどうか　true→裏側で実行終わってる　false→裏側で実行中
 	public static boolean runningFlag = true;
 
+	// ドライバ
 	public static String[] driver_comboData = {"", "postgresql", "sqlite", "mysql", "db2", "sqlserver"};
 	public static DefaultComboBoxModel driverModel = new DefaultComboBoxModel(driver_comboData);
+	
+	// 文字コード
+	public static String[] encoding_comboData = {"UTF-8", "Shift-JIS", "EUC-JP"};
+	public static DefaultComboBoxModel encodingModel = new DefaultComboBoxModel(encoding_comboData);
+	public static String getEncoding() {
+		return GlobalEnv.encodingModel.getSelectedItem().toString();
+	}
+	
 
 	public static int searchStart = 0;
 
