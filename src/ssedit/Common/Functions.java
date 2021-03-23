@@ -219,6 +219,9 @@ public class Functions {
 		if(Edit.size > 0 ){
 			s += "text_size=" + Edit.size + "" + GlobalEnv.OS_LS + "";
 		}
+		if(!GlobalEnv.rhome_pathField.getText().equals("")){
+			s += "rhome_path=" + GlobalEnv.rhome_pathField.getText() + "" + GlobalEnv.OS_LS + "";
+		}
 
         Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.ssql");
         Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.html");
@@ -287,6 +290,7 @@ public class Functions {
       		FrontEnd.label_size.setFont(Edit.defaultEditFont);
       		FrontEnd.label_size.setText(Edit.size+"");
 		} catch (Exception e) { }
+		GlobalEnv.rhome_pathField.setText(has(config_fn_ssqltool, "rhome_path"));
         Edit.setLinePane();
     }
     /******************************************************************************************************************/

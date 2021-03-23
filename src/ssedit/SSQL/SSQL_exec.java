@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 
 import javax.swing.JTextPane;
 import javax.swing.text.DefaultStyledDocument;
@@ -20,6 +21,36 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 //	SSQL_exec() {
 //		super();
 //	}
+	
+//	//環境変数の設定
+//    public static void setenv(String name, String val){
+//    	try {
+//    		System.out.println(System.getenv("USER"));
+//    		System.out.println("Before: "+System.getenv(name));
+//    		
+//    		
+////			// 環境変数が設定されているマップをリフレクションを使用して持ってくる
+////			Class<?> clazz = Class.forName("java.lang.ProcessEnvironment");
+////			Field f = clazz.getDeclaredField("theCaseInsensitiveEnvironment");
+////			f.setAccessible(true);
+////			Map<String,String> fi = (Map<String,String>) f.get(null);
+////			 
+////			// そのマップにput
+////			fi.put(name, val);
+//    		
+////    		Runtime rt = Runtime.getRuntime();
+////    		String workingDir = Functions.getWorkingDir();
+////    		Process proc = rt.exec(new String[]{
+//////                    "export","R_HOME=/Library/Frameworks/R.framework/Resources"}, 
+////                    "/bin/bash", "~/exec_export.sh"}, 
+////                    null, null);
+//			
+//			System.out.println("After: "+System.getenv(name));
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//    }
+	
 
 	/**
 	 *
@@ -31,13 +62,22 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 	static BufferedReader errorBuffReader; // エラー出力
 
     //SuperSQLの実行
+	private static final String workingDir = Functions.getWorkingDir();
+	private static final String rjava_library_path = new File(workingDir + GlobalEnv.OS_FS + "libs" + GlobalEnv.OS_FS + "jri").getAbsolutePath() + GlobalEnv.OS_FS;
     public static boolean execSuperSQL(String filename, String classPath, JTextPane resultPane, DefaultStyledDocument document) {
         try{
+//        	setenv("R_HOME", "/Library/Frameworks/R.framework/Resources");	//TODO_old
+        	
+        	//String java_library_path = "/Library/Frameworks/R.framework/Resources/library/rJava/jri/";
+//			String workingDir =  Functions.getWorkingDir();
+        	
+        	
         	String result = "";
         	if(GlobalEnv.loggerFlag) {
             result = doExec(new String[]{
                     "java",
                     "-Dfile.encoding="+GlobalEnv.getEncoding(),
+                    "-Djava.library.path=.:"+rjava_library_path,		//rJava用
                     "-classpath", classPath,
                     "supersql.FrontEnd",
                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
@@ -48,6 +88,7 @@ public class SSQL_exec extends FrontEnd implements Runnable {
         		result = doExec(new String[]{
                      "java",
                      "-Dfile.encoding="+GlobalEnv.getEncoding(),
+                     "-Djava.library.path=.:"+rjava_library_path,		//rJava用
                      "-classpath", classPath,
                      "supersql.FrontEnd",
                      //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
@@ -69,12 +110,16 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 			String result = "";
 			if(GlobalEnv.loggerFlag) {
 			 result = doExec(new String[] { "java",
-					"-Dfile.encoding="+GlobalEnv.getEncoding(), "-classpath", libsClassPath,
+					"-Dfile.encoding="+GlobalEnv.getEncoding(), 
+                    "-Djava.library.path=.:"+rjava_library_path,		//rJava用
+					"-classpath", libsClassPath,
                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
 					"supersql.FrontEnd", "-logger", "on", "-f", generateFileName}, null, null);
 			} else {
 			result = doExec(new String[] { "java",
-					"-Dfile.encoding="+GlobalEnv.getEncoding(), "-classpath", libsClassPath,
+					"-Dfile.encoding="+GlobalEnv.getEncoding(), 
+                    "-Djava.library.path=.:"+rjava_library_path,		//rJava用
+					"-classpath", libsClassPath,
 	                 //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
 					"supersql.FrontEnd", "-f", generateFileName}, null, null);
 			}
@@ -118,7 +163,7 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 //	public static String doExec(String[] commands, JTextArea resultArea)
 			throws IOException {
 		// ランタイムオブジェクト取得
-		Runtime rt = Runtime.getRuntime();
+		//Runtime rt = Runtime.getRuntime();
 		// 実行しているディレクトリを指定してコマンドを実行（用途に合わせてパスや環境変数を追加する必要あり）
 		// Process proc = rt.exec(commands, null, new
 		// File(Thread.currentThread().getContextClassLoader().getResource("").getPath()));
@@ -129,14 +174,84 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 //		if (workingDir.endsWith(".jar")) { // jarファイルを実行した場合（Eclipseから起動した場合は入らない）
 //			workingDir = workingDir.substring(0, workingDir.lastIndexOf(GlobalEnv.OS_FS));
 //		}
-		String workingDir = Functions.getWorkingDir();
+		//String workingDir = Functions.getWorkingDir();
 //		try {
 //			document.insertString(resultPane.getCaretPosition(), "workingdir = " + workingDir + "\n", CaretState.attr3);
 //		} catch (BadLocationException e1) {
-//			// TODO 自動生成された catch ブロック
 //			e1.printStackTrace();
 //		}
-		Process proc = rt.exec(commands, null, new File(workingDir));
+		
+		
+		
+
+//		////////////////////////////////////////////////////////////////////////////////////////////////////////
+//		
+//		//TODO  [重要] R_HOME取得用shの実行
+//		System.out.println("Get R_HOME: start");
+//		BufferedReader buffReader0 = null;
+//		BufferedReader errorBuffReader0 = null;
+//		try {
+//			Runtime rt0 = Runtime.getRuntime();
+////			Runtime.getRuntime().exec("Rscript myScript.R"); 
+//	//		String[] c = {"sh", "~/z.sh"};
+//	//		ProcessBuilder pb0 = new ProcessBuilder(new String[] {"sh", "~/z.sh"});
+//	//		ProcessBuilder pb0 = new ProcessBuilder("sh", "-c", "echo 'Hello!'");
+////			ProcessBuilder pb0 = new ProcessBuilder("~/z.sh");
+////			ProcessBuilder pb0 = new ProcessBuilder("Rscript", "~/z.R");
+////			ProcessBuilder pb0 = new ProcessBuilder("/bin/sh", "R", "--quiet", "--vanilla", "--slave", "<<EOF", "R.home()", "EOF");
+////			Process proc0 = pb0.start();
+//			
+//			
+////			Process proc0 = rt0.exec(new String[]{"Rscript", "~/z.R"}, null, new File("/usr/local/bin"));
+////			Process proc0 = rt0.exec(new String[]{"/usr/local/bin/Rscript", "~/z.R"}, null, new File("/usr/local/bin"));
+////			Process proc0 = rt0.exec(new String[]{"which", "Rscript"}, null, null);
+////			Process proc0 = rt0.exec(new String[]{"echo", "$PATH"}, null, null);
+//			Process proc0 = rt0.exec(new String[]{"~/z.sh"}, null, null);
+//			buffReader0 = new BufferedReader(new InputStreamReader(proc0.getInputStream(), GlobalEnv.getEncoding()));
+//			errorBuffReader0 = new BufferedReader(new InputStreamReader(proc0.getErrorStream(), GlobalEnv.getEncoding()));
+//
+//			String line = "";
+//			System.out.println("try1");
+//			while ((line = buffReader0.readLine()) != null) {
+//				System.out.println(line);
+//			}
+//			line = "";
+//			while ((line = errorBuffReader0.readLine()) != null) {
+//				System.out.println(line);
+//			}
+//			System.out.println("try2");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			buffReader0.close();
+//			errorBuffReader0.close();
+//		}
+//		System.out.println("Get R_HOME: end");
+//		
+//		////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		
+		
+		
+        ProcessBuilder pb = new ProcessBuilder(commands);
+        pb.directory(new File(workingDir));
+        pb.redirectErrorStream(true);
+        
+        
+        //[重要] rJava用 環境変数($R_HOME)の設定  							//TODO_old これで通るが他の位置で？ -> おそらくここでOK
+        String rhome_path = GlobalEnv.rhome_pathField.getText();		// 設定タブから取得
+        if(!rhome_path.equals("")){
+            Map<String, String> env = pb.environment();
+            //env.put("R_HOME", "/Library/Frameworks/R.framework/Resources");
+            env.put("R_HOME", rhome_path);								//環境変数$R_HOMEを指定
+		}
+        
+		
+		
+		
+		
+//		Process proc = rt.exec(commands, null, new File(workingDir));
+		Process proc = pb.start();
 
 		// 実行結果の取得用のオブジェクトの作成
 		buffReader = new BufferedReader(new InputStreamReader(
@@ -172,6 +287,10 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 			}
 //			Log.ggg(str);
 //			System.out.println(str);
+//			document.insertString(document.getLength(), "workingDir = " + workingDir + "" + GlobalEnv.OS_LS + "" +
+//														"java_library_path = " + java_library_path + "" + GlobalEnv.OS_LS + "",
+//														CaretState.plane);
+//			resultPane.setCaretPosition(document.getLength());
 
 		} catch (Exception e) {
 			;

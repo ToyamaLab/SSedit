@@ -201,6 +201,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JLabel config_passwordLabel = new JLabel("パスワード：");
     JLabel config_outdirLabel = new JLabel("出力先：");
     JLabel config_pathLabel = new JLabel("URL指定：");
+    JLabel rhome_path_Panel = new JLabel("Rをインストールしたフォルダのパス(ggplot関数用)：");		//$R_HOME
     JPanel configPanel = new JPanel();
 
 //	JTextField folderPath_textField1 = new JTextField();
@@ -778,6 +779,13 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         Functions.addPanel(configPanel, config_pathLabel, 0, 8, 1, 1);
         Functions.addPanel(configPanel, GlobalEnv.urlCombo, 1, 8, 2, 1);
 
+        Functions.addPanel(configPanel, new JSeparator(), 0, 9, 5, 1);		//横線
+
+        Functions.addPanel(configPanel, rhome_path_Panel, 0, 10, 1, 1);
+        Functions.addPanel(configPanel, GlobalEnv.rhome_pathField, 1, 10, 4, 1);
+
+        
+        
 
         JPanel textSize = new JPanel();
         textSize.setPreferredSize(new Dimension(300, 40));
