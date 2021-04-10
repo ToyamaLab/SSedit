@@ -8,12 +8,14 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -391,35 +393,59 @@ public class Functions {
 	private static HashMap<String,HashMap<String,String>> file_targetMap = new HashMap<String,HashMap<String,String>>();
 	public static String has(String filename, String target) {
 		String ret = "";
-
-		try {
-			String fn = new File(filename).getName();
-			HashMap<String,String> targetMap = new HashMap<String,String>();
-			if(file_targetMap.containsKey(fn)){
-				// 2回目以降 Mapから取得
-				targetMap = file_targetMap.get(fn);
-			}else{
-				// 初回のみ ファイル読み込み
-				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), GlobalEnv.getEncoding()));
-				String line;
-				while ((line = br.readLine()) != null) {
-					if(line.contains("=")){
-						String k = line.substring(0, line.indexOf("=")).trim();
-						String v = line.substring(line.indexOf("=") + 1).trim();
-						targetMap.put(k, v);
-						//System.out.println(k+" = "+v);
-					}
-				}
-				br.close();
-				file_targetMap.put(fn, targetMap);
-			}
-			
-			if(targetMap.containsKey(target)) {
-				ret = targetMap.get(target);
-			}
-		} catch (IOException e) {
+		String fn = new File(filename).getName();
+		HashMap<String,String> targetMap = new HashMap<String,String>();
+		if(file_targetMap.containsKey(fn)){
+			// 2回目以降 Mapから取得
+			targetMap = file_targetMap.get(fn);
+		}else{
+			// 初回のみ ファイル読み込み
+//				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), GlobalEnv.getEncoding()));
+//				String line;
+//				while ((line = br.readLine()) != null) {
+//					if(line.contains("=")){
+//						String k = line.substring(0, line.indexOf("=")).trim();
+//						String v = line.substring(line.indexOf("=") + 1).trim();
+//						targetMap.put(k, v);
+//						//System.out.println(k+" = "+v);
+//					}
+//				}
+//				br.close();
+//				file_targetMap.put(fn, targetMap);
+			targetMap = getDBCongigFromFile(filename, fn);
+		}
+		
+		if(targetMap.containsKey(target)) {
+			ret = targetMap.get(target);
 		}
 		return ret;
+	}
+	// タブ切替時にファイルからDB接続情報を再取得
+	public static void getDBCongigFromFile() {
+		String filename = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+		String fn = new File(filename).getName();
+		getDBCongigFromFile(filename, fn);
+	}
+	// 初回/タブ切替時にファイルからDB接続情報を取得
+	private static HashMap<String, String> getDBCongigFromFile(String filename, String fn) {
+		HashMap<String,String> targetMap = new HashMap<String,String>();
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), GlobalEnv.getEncoding()));
+			String line;
+			while ((line = br.readLine()) != null) {
+				if(line.contains("=")){
+					String k = line.substring(0, line.indexOf("=")).trim();
+					String v = line.substring(line.indexOf("=") + 1).trim();
+					targetMap.put(k, v);
+					//System.out.println(k+" = "+v);
+				}
+			}
+			br.close();
+			file_targetMap.put(fn, targetMap);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return targetMap;
 	}
 
 	// 作業フォルダ内にある指定したファイルを読み込む

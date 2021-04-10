@@ -63,7 +63,12 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 
     //SuperSQLの実行
 	private static final String workingDir = Functions.getWorkingDir();
-	private static final String rjava_library_path = new File(workingDir + GlobalEnv.OS_FS + "libs" + GlobalEnv.OS_FS + "jri").getAbsolutePath() + GlobalEnv.OS_FS;
+	//NG: ssqltool5_2:	private static final String rjava_library_path = "."+GlobalEnv.OS_PS+"\""+new File(workingDir + GlobalEnv.OS_FS + "libs" + GlobalEnv.OS_FS + "jri").getAbsolutePath() + GlobalEnv.OS_FS+"\"";
+	//OK: ssqltool5_3:	private static final String rjava_library_path = "."+GlobalEnv.OS_PS+new File(workingDir + GlobalEnv.OS_FS + "libs" + GlobalEnv.OS_FS + "jri").getAbsolutePath() + GlobalEnv.OS_FS;
+	//OK: ssqltool5_4:
+	public final static String java_library_path = "."+GlobalEnv.OS_PS
+			                                         +new File(workingDir + GlobalEnv.OS_FS + "libs").getAbsolutePath() + GlobalEnv.OS_FS + GlobalEnv.OS_PS				// libs			mssql-jdbc_auth-8.2.2.x64.dll用
+			                                         +new File(workingDir + GlobalEnv.OS_FS + "libs" + GlobalEnv.OS_FS + "jri").getAbsolutePath() + GlobalEnv.OS_FS;	// libs/jri		rJava用
     public static boolean execSuperSQL(String filename, String classPath, JTextPane resultPane, DefaultStyledDocument document) {
         try{
 //        	setenv("R_HOME", "/Library/Frameworks/R.framework/Resources");	//TODO_old
@@ -71,13 +76,15 @@ public class SSQL_exec extends FrontEnd implements Runnable {
         	//String java_library_path = "/Library/Frameworks/R.framework/Resources/library/rJava/jri/";
 //			String workingDir =  Functions.getWorkingDir();
         	
+        	System.out.println("ssqltool5_4  -Djava.library.path="+java_library_path);
+        	
         	
         	String result = "";
         	if(GlobalEnv.loggerFlag) {
-            result = doExec(new String[]{
+        		result = doExec(new String[]{
                     "java",
                     "-Dfile.encoding="+GlobalEnv.getEncoding(),
-                    "-Djava.library.path=.:"+rjava_library_path,		//rJava用
+                    "-Djava.library.path="+java_library_path,		//rJava用
                     "-classpath", classPath,
                     "supersql.FrontEnd",
                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
@@ -88,7 +95,7 @@ public class SSQL_exec extends FrontEnd implements Runnable {
         		result = doExec(new String[]{
                      "java",
                      "-Dfile.encoding="+GlobalEnv.getEncoding(),
-                     "-Djava.library.path=.:"+rjava_library_path,		//rJava用
+                     "-Djava.library.path="+java_library_path,		//rJava用
                      "-classpath", classPath,
                      "supersql.FrontEnd",
                      //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
@@ -111,14 +118,14 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 			if(GlobalEnv.loggerFlag) {
 			 result = doExec(new String[] { "java",
 					"-Dfile.encoding="+GlobalEnv.getEncoding(), 
-                    "-Djava.library.path=.:"+rjava_library_path,		//rJava用
+                    "-Djava.library.path="+java_library_path,		//rJava用
 					"-classpath", libsClassPath,
                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
 					"supersql.FrontEnd", "-logger", "on", "-f", generateFileName}, null, null);
 			} else {
 			result = doExec(new String[] { "java",
 					"-Dfile.encoding="+GlobalEnv.getEncoding(), 
-                    "-Djava.library.path=.:"+rjava_library_path,		//rJava用
+                    "-Djava.library.path="+java_library_path,		//rJava用
 					"-classpath", libsClassPath,
 	                 //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
 					"supersql.FrontEnd", "-f", generateFileName}, null, null);

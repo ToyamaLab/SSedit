@@ -287,6 +287,8 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     public static JLabel label_size = new JLabel("12");
     private final JButton saveButton = new JButton("保存");
 
+    JButton updatedbButton = new JButton("更新");
+
 
     JPopupMenu popup;
 
@@ -438,7 +440,6 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         add(viewPanel);
 
         JPanel dbPanel = new JPanel();
-        JButton updatedbButton = new JButton("更新");
         dbPanel.add(table_scrollpane);
         dbPanel.add(updatedbButton);
         dbPanel.setLayout(new BoxLayout(dbPanel, BoxLayout.PAGE_AXIS));
@@ -837,8 +838,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         setTitle("SuperSQL クエリ実行ツール");
 
 
-        // データベースを読み込んでツリーを生成
-        DB.db();
+//        // データベースを読み込んでツリーを生成
+////        DB.db();
+//        updatedbButton.doClick();		//ここだとうまくいかない
 
         // エディタにアクションを追加
         ActionMap am = GlobalEnv.textPane.getActionMap();
@@ -1066,23 +1068,23 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
                     String filename = filenameLabel.getText(); // テキストフィールドから値を得る（ファイル名）
                     filename = GlobalEnv.folderPath + GlobalEnv.OS_FS + filename;
+                    
                             // マルチスレッド(非同期)処理
                             // SwingWorkerを生成して実行
                             @SuppressWarnings("rawtypes")
-                            final
-                            SwingWorker worker1 = new execThread1(filename, button1, folder_exe_button);
+                            final SwingWorker worker1 = new execThread1(filename, button1, folder_exe_button);
                             worker1.execute();
 
                             // 実行ボタンが押されたら実行結果のタブに切り替える
                             tabbed_Table.setSelectedIndex(1);
-                            stopButton.setEnabled(true);
+//                            stopButton.setEnabled(true);
 
                             stopButton.addActionListener(new ActionListener() {
-
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                     worker1.cancel(true);
                                     stopButton.setEnabled(false);
+                                    button1.setEnabled(true);
                                 }
                             });
 
@@ -1302,9 +1304,15 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         updatedbButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DB.db();
+//                DB.db();
+            	@SuppressWarnings("rawtypes")
+                final SwingWorker worker3 = new execThread3(updatedbButton);
+                worker3.execute();
             }
         });
+        // データベースを読み込んでツリーを生成
+//      DB.db();
+        updatedbButton.doClick();
 
         // 2つ目のタブ: [実行]
         folder_exe_button.addActionListener(execButton2 = new AbstractAction() {
@@ -1312,9 +1320,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 // マルチスレッド(非同期)処理
                 // SwingWorkerを生成して実行
                 @SuppressWarnings("rawtypes")
-                final
-                SwingWorker worker2 = new execThread2(folder_exe_button,
-                        button1);
+                final SwingWorker worker2 = new execThread2(folder_exe_button, button1);
                 worker2.execute();
                 stopButton2.setEnabled(true);
 
@@ -1329,9 +1335,10 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             }
         });
 
-        // 3つ目のタブ: 保存ボタンを押した時の動作
+        // 3つ目のタブ: 保存ボタンを押した時(タブ切替時, 終了時など)の動作
         button3.addActionListener(action3 = new AbstractAction() {
             public void actionPerformed(ActionEvent arg0) {
+            	button3.setEnabled(false);
                 // どのラジオボタンが選択されているか
                 if (GlobalEnv.radio1[0].isSelected())
                     GlobalEnv.radio1Selected = 0; // あり
@@ -1348,10 +1355,15 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 CaretState.changeTabSize(tabSize, GlobalEnv.textPane, GlobalEnv.doc);
 
                 if (Functions.createConfig()) {
+                    System.out.println("設定ファイル保存完了");
                     Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.ssql");
                     Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.html");
                     Functions.deleteFile(GlobalEnv.outdirPath, ".errorlog.txt");
-                    DB.db();
+                    if (!isClose) {	//終了時の処理ではないとき(タブ切替時など)
+//                    	DB.db();
+                    	Functions.getDBCongigFromFile();	//DB接続情報が書かれたファイルの再読込
+                    	updatedbButton.doClick();
+					}
                     if (GlobalEnv.outdirPath.equals("")) {
                         GlobalEnv.outdirPath = GlobalEnv.folderPath;
                     }
@@ -1362,11 +1374,13 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 //						JOptionPane.showMessageDialog(null, "Save Successfully");
                     }
                 } else {
+                    System.out.println("設定ファイル保存失敗");
 //					if (GlobalEnv.radio2[0].isSelected())
 //						JOptionPane.showMessageDialog(null, "保存に失敗しました");// masato
 //					else
 //						JOptionPane.showMessageDialog(null, "faled to save");
                 }
+                button3.setEnabled(true);
             }
         });
 
@@ -1527,7 +1541,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     }
 
     // 終了（[キャンセル]・[X]ボタン押下）時に呼び出す
+    boolean isClose = false;	// 終了（[キャンセル]・[X]ボタン押下）時かどうか： db()実行判断に使用
     public void windowCloseCheckProcess() {
+    	isClose = true;
         // [キャンセル]が押されたとき、Save＆終了確認画面を表示（※dataが存在している場合のみ）
         if (currentfileData.equals(GlobalEnv.textPane.getText())) {
             button3.doClick();
@@ -1560,7 +1576,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     /**********************************************************************************************/
     /* マルチスレッド(非同期)処理（クエリの実行・選択されたフォルダ内の全クエリの実行など） */
     /**********************************************************************************************/
-    /* 非同期に行う処理を記述するためのクラス */
+    /* 非同期に行う処理を記述するためのクラス1 */
     // 1つ目のタブ　クエリの実行
     class execThread1 extends SwingWorker<Object, Object> {
         private String filename1;
@@ -1578,6 +1594,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             // if(GlobalEnv.radio2[0].isSelected()){
             // 前処理
             button1.setEnabled(false);
+            stopButton.setEnabled(true);
             button1.setText("実行中...");
             button2.setEnabled(false);
             GlobalEnv.resultPane.setEnabled(true);
@@ -1648,10 +1665,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 button1.setText("Run");
             button1.setEnabled(true);
             button2.setEnabled(true);
+            stopButton.setEnabled(false);
         }
     }
 
-    /* 非同期に行う処理を記述するためのクラス */
+    /* 非同期に行う処理を記述するためのクラス2 */
     // 2つ目のタブ　選択されたフォルダ内の全クエリの実行
     class execThread2 extends SwingWorker<Object, Object> {
         private JButton button1, button2;
@@ -1667,6 +1685,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             if (GlobalEnv.radio2[0].isSelected()) {
                 // 前処理
                 button1.setEnabled(false);
+                stopButton2.setEnabled(true);
                 button1.setText("実行中...");
                 button2.setEnabled(false);
                 GlobalEnv.resultPane2.setEnabled(true);
@@ -1855,8 +1874,41 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 button1.setText("Run");
             button1.setEnabled(true);
             button2.setEnabled(true);
+            stopButton.setEnabled(false);
         }
     }
+    
+    /* 非同期に行う処理を記述するためのクラス3 */
+    // 1つ目のタブ　更新 (テーブルリストの更新)
+    class execThread3 extends SwingWorker<Object, Object> {
+        private JButton updatedbButton;
+
+        public execThread3(JButton updatedbButton) {
+            this.updatedbButton = updatedbButton;
+        }
+
+        // 非同期処理
+        @Override
+        public Object doInBackground() {
+        	System.out.println("更新ボタン押下");
+        	updatedbButton.setEnabled(false);
+        	updatedbButton.setText("更新中…");
+            DB.db();
+            return null;
+        }
+
+        // 非同期処理後に実行
+        @Override
+        protected void done() {
+            // ボタンを使用可能にする
+            if (GlobalEnv.radio2[0].isSelected())
+            	updatedbButton.setText("更新");
+            else
+            	updatedbButton.setText("Update");
+            updatedbButton.setEnabled(true);
+        }
+    }
+
 
 
     public static void reloadFolderTree(){
