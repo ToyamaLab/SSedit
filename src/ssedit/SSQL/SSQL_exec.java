@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.swing.JTextPane;
@@ -53,7 +54,7 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 	
 
 	/**
-	 *
+	 * SuperSQLの実行
 	 */
 	private static final long serialVersionUID = 1L;
 	static StringWriter sWriter; // 出力された文字列を受けとるためのオブジェクト
@@ -71,36 +72,30 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 			                                         +new File(workingDir + GlobalEnv.OS_FS + "libs" + GlobalEnv.OS_FS + "jri").getAbsolutePath() + GlobalEnv.OS_FS;	// libs/jri		rJava用
     public static boolean execSuperSQL(String filename, String classPath, JTextPane resultPane, DefaultStyledDocument document) {
         try{
-//        	setenv("R_HOME", "/Library/Frameworks/R.framework/Resources");	//TODO_old
-        	
+        	//setenv("R_HOME", "/Library/Frameworks/R.framework/Resources");	//TODO_old
         	//String java_library_path = "/Library/Frameworks/R.framework/Resources/library/rJava/jri/";
-//			String workingDir =  Functions.getWorkingDir();
+        	System.out.println("ssqltool5_6  -Djava.library.path="+java_library_path);
         	
-        	System.out.println("ssqltool5_4  -Djava.library.path="+java_library_path);
-        	
-        	
-        	String result = "";
-        	if(GlobalEnv.loggerFlag) {
-        		result = doExec(new String[]{
-                    "java",
-                    "-Dfile.encoding="+GlobalEnv.getEncoding(),
-                    "-Djava.library.path="+java_library_path,		//rJava用
-                    "-classpath", classPath,
-                    "supersql.FrontEnd",
-                    //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
-                    "-logger",
-                    "on",
-                    "-f", filename}, resultPane, document);
-        	} else {
-        		result = doExec(new String[]{
-                     "java",
-                     "-Dfile.encoding="+GlobalEnv.getEncoding(),
-                     "-Djava.library.path="+java_library_path,		//rJava用
-                     "-classpath", classPath,
-                     "supersql.FrontEnd",
-                     //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
-                     "-f", filename}, resultPane, document);
-        	}
+        	String result = doExec(getCoomand(classPath, filename), resultPane, document);
+//        	if(GlobalEnv.isLoggerOn()) {
+//        		result = doExec(new String[]{
+//                    "java",
+//                    "-Dfile.encoding="+GlobalEnv.getEncoding(),
+//                    "-Djava.library.path="+java_library_path,		//rJava用
+//                    "-classpath", classPath,
+//                    "supersql.FrontEnd",
+//                    "-logger","on",									//20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
+//                    "-f", filename}, resultPane, document);
+//        	} else {
+//        		System.out.println("logger off");
+//        		result = doExec(new String[]{
+//                     "java",
+//                     "-Dfile.encoding="+GlobalEnv.getEncoding(),
+//                     "-Djava.library.path="+java_library_path,		//rJava用
+//                     "-classpath", classPath,
+//                     "supersql.FrontEnd",
+//                     "-f", filename}, resultPane, document);
+//        	}
             if(result.equals("// completed normally //"))    return true;
             else                                             return false;
         }catch(Exception e){
@@ -108,32 +103,32 @@ public class SSQL_exec extends FrontEnd implements Runnable {
             return false;
         }
     }
-
 	public static boolean execSuperSQL2(String generateFileName, String query) {
-//		System.out.println("実行中...　flag = " + GlobalEnv.runningFlag);
+		//System.out.println("実行中...　flag = " + GlobalEnv.runningFlag);
 		ssqlExecLogs = "";
 		Functions.createFile(generateFileName, query);
 		try {
-			String result = "";
-			if(GlobalEnv.loggerFlag) {
-			 result = doExec(new String[] { "java",
-					"-Dfile.encoding="+GlobalEnv.getEncoding(), 
-                    "-Djava.library.path="+java_library_path,		//rJava用
-					"-classpath", libsClassPath,
-                    //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
-					"supersql.FrontEnd", "-logger", "on", "-f", generateFileName}, null, null);
-			} else {
-			result = doExec(new String[] { "java",
-					"-Dfile.encoding="+GlobalEnv.getEncoding(), 
-                    "-Djava.library.path="+java_library_path,		//rJava用
-					"-classpath", libsClassPath,
-	                 //20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
-					"supersql.FrontEnd", "-f", generateFileName}, null, null);
-			}
+			String result = doExec(getCoomand(libsClassPath, generateFileName), null, null);
+//			if(GlobalEnv.isLoggerOn()) {
+//				 result = doExec(new String[] { "java",
+//						"-Dfile.encoding="+GlobalEnv.getEncoding(), 
+//	                    "-Djava.library.path="+java_library_path,		//rJava用
+//						"-classpath", libsClassPath,
+//						"supersql.FrontEnd", 
+//						"-logger", "on", 								//20141210 masato -loggerは実習でのみ"-logger", "on"を配列の引数に追加
+//						"-f", generateFileName}, null, null);
+//			} else {
+//				result = doExec(new String[] { "java",
+//						"-Dfile.encoding="+GlobalEnv.getEncoding(), 
+//	                    "-Djava.library.path="+java_library_path,		//rJava用
+//						"-classpath", libsClassPath,
+//						"supersql.FrontEnd", 
+//						"-f", generateFileName}, null, null);
+//			}
 			if (result.equals("// completed normally //")) {
 				errorStr[0] = "";
 				errorStr[1] = "";
-//				FrontEnd.tmp = GlobalEnv.textPane.getText();
+				//FrontEnd.tmp = GlobalEnv.textPane.getText();
 				return true;
 			} else {
 				Functions.createFile(GlobalEnv.outdirPath + GlobalEnv.OS_FS + ".errorlog.txt", ssqlExecLogs);
@@ -142,6 +137,26 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+	
+    //実行コマンドの作成
+    private static String[] getCoomand(String classpath, String filename) {
+    	String[] command = new String[]{
+                "java",
+                "-Dfile.encoding="+GlobalEnv.getEncoding(),
+                "-Djava.library.path="+java_library_path,		//rJava用
+                "-classpath", classpath,
+                "supersql.FrontEnd",
+        };
+    	//TODO SSedit直下のconfigを読む場合  "-c"追加
+    	if (GlobalEnv.isLoggerOn()) {	//logger on
+    		System.out.println("logger on");
+    		command = Functions.arrayConcat(command, new String[]{"-logger","on"});
+		}
+    	command = Functions.arrayConcat(command, new String[]{"-f", filename});
+    	System.out.println("command = "+Arrays.toString(command));
+    	
+    	return command;
 	}
 
 

@@ -151,8 +151,6 @@ public class GlobalEnv {
 
 	public static int searchStart = 0;
 
-	//ログ収集フラグ
-	public static boolean loggerFlag = true;
 
 	public static JTextPane textPane = new JTextPane() {
 		// textPaneでも横スクロールが出現
@@ -253,7 +251,9 @@ public class GlobalEnv {
 	public static final JComboBox urlCombo = History.makeComboBox(Functions.has(USER_HOME + OS_FS + ".ssqltool", "url"));
 	public static DefaultComboBoxModel urlModel = (DefaultComboBoxModel) urlCombo.getModel();
 
-
+	
+	//ログ収集フラグ
+	private static boolean loggerFlag = false;	//Default: false(off)
 	public static void setLoggerFlag(String[] args) {
 		//Default: off
 		for (int i = 0; i < args.length; i++) {
@@ -261,6 +261,9 @@ public class GlobalEnv {
 				loggerFlag = true;
 			}
 		}
+	}
+	public static boolean isLoggerOn() {
+		return loggerFlag;
 	}
 
 }

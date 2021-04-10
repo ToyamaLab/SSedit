@@ -8,14 +8,12 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -30,8 +28,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.text.BadLocationException;
-
-import com.ibm.db2.jcc.am.v;
 
 import ssedit.FrontEnd;
 import ssedit.Caret.CaretState;
@@ -102,6 +98,16 @@ public class Functions {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+	
+	// 配列同士の結合用  array1[]+array2[]
+	@SuppressWarnings("unchecked")
+	public static <T> T[] arrayConcat(final T[] array1, final T... array2) {
+		final Class<?> type1 = array1.getClass().getComponentType();
+		final T[] joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
+		System.arraycopy(array1, 0, joinedArray, 0, array1.length);
+		System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+		return joinedArray;
 	}
 	
 	/******************************************************************************************************************/
