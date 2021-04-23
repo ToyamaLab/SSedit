@@ -243,14 +243,21 @@ public class GlobalEnv {
 	public static int radio1Selected = 0; // goto4 //どのラジオボタンが選択されていたか
 	public static JRadioButton[] radio2 = new JRadioButton[2];
 	public static int radio2Selected = 0;
+	public static JRadioButton[] configSaveDirRadio = new JRadioButton[2];
+	public static int configSaveDirRadioSelected = 0;
 
-	public static final JComboBox folderCombo    = History.makeComboBox(Functions.has(USER_HOME + OS_FS + ".ssqltool", "folderPath1"));
+
+//	public static final JComboBox folderCombo    = History.makeComboBox(Functions.has(USER_HOME + OS_FS + ".ssqltool", "folderPath1"));
+	public static final JComboBox folderCombo    = History.makeComboBox(Functions.has(Functions.getConfigSaveDir() + ".ssqltool", "folderPath1"));
 	public static DefaultComboBoxModel folderModel = (DefaultComboBoxModel) folderCombo.getModel();
-	public static final JComboBox outdirCombo    = History.makeComboBox(Functions.has(USER_HOME + OS_FS + ".ssql", "outdir"));
+//	public static final JComboBox outdirCombo    = History.makeComboBox(Functions.has(USER_HOME + OS_FS + ".ssql", "outdir"));
+	public static final JComboBox outdirCombo    = History.makeComboBox(Functions.has(Functions.getConfigSaveDir() + ".ssql", "outdir"));
 	public static DefaultComboBoxModel outdirModel = (DefaultComboBoxModel) outdirCombo.getModel();
-	public static final JComboBox urlCombo = History.makeComboBox(Functions.has(USER_HOME + OS_FS + ".ssqltool", "url"));
+//	public static final JComboBox urlCombo = History.makeComboBox(Functions.has(USER_HOME + OS_FS + ".ssqltool", "url"));
+	public static final JComboBox urlCombo = History.makeComboBox(Functions.has(Functions.getConfigSaveDir() + ".ssqltool", "url"));
 	public static DefaultComboBoxModel urlModel = (DefaultComboBoxModel) urlCombo.getModel();
 
+	
 	
 	//ログ収集フラグ
 	private static boolean loggerFlag = false;	//Default: false(off)

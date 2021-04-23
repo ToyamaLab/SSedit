@@ -197,11 +197,12 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JLabel config_portLabel = new JLabel("ポート番号：");
     JLabel config_instanceLabel = new JLabel("SQL Server インスタンス名：");					// goto 20200728  SQL Server 
     JLabel config_optionsLabel = new JLabel("SQL Server 他のオプション(複数の場合は;区切り)：");	// goto 20200728  SQL Server
-    JLabel config_userLabel = new JLabel("ユーザ名：");
+    JLabel config_userLabel = new JLabel("ユーザー名：");
     JLabel config_passwordLabel = new JLabel("パスワード：");
     JLabel config_outdirLabel = new JLabel("出力先：");
     JLabel config_pathLabel = new JLabel("URL指定：");
     JLabel rhome_path_Panel = new JLabel("Rをインストールしたフォルダのパス(ggplot関数用)：");		//$R_HOME
+    JLabel configSaveDirLabel = new JLabel("設定情報の保存場所：");								//.ssql, .ssqltoolの保存場所
     JPanel configPanel = new JPanel();
 
 //	JTextField folderPath_textField1 = new JTextField();
@@ -327,6 +328,8 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         // 前回の情報（開いていたフォルダ・ファイル）を読み込んで反映
         Functions.reflectSSQLtoolInfo();
+        //Functions.reflectConfig();
+        
         // クエリ新規作成のコンボボックス
         querycomboModel = new DefaultComboBoxModel((Vector)combodata);
         queryCombo = new JComboBox(querycomboModel);
@@ -503,18 +506,24 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         GlobalEnv.resultPane2.setEditable(false);
         // table_GlobalEnv.textPane.setEditable(false);//編集不可、コピペは出来る
 
+        System.out.println("GlobalEnv.configFile = "+GlobalEnv.configFile);
         GlobalEnv.configFile = ".ssql";
         // .ssqlファイルが存在していればそのまま読み込む
-        if(new File(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile).exists()){
+//        if(new File(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile).exists()){
+        if(new File(Functions.getConfigSaveDir() + GlobalEnv.configFile).exists()){
+            System.out.println("exists: "+Functions.getConfigSaveDir() + GlobalEnv.configFile);
             GlobalEnv.configFile = ".ssql";
         // 存在していなければconfig.ssqlを読み込む
         } else {
+        	System.out.println("not exists: "+Functions.getConfigSaveDir() + GlobalEnv.configFile);
             GlobalEnv.configFile = "config.ssql";
             // それもなければ以降.ssqlで保存
-            if(!new File(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile).exists()){
+//            if(!new File(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile).exists()){
+            if(!new File(Functions.getConfigSaveDir() + GlobalEnv.configFile).exists()){
                 GlobalEnv.configFile = ".ssql";
             }
         }
+        System.out.println("GlobalEnv.configFile = "+GlobalEnv.configFile);
         Functions.reflectConfig();
 //		String configFileContents = Common.readFile(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile);
 //		if (configFileContents.trim().equals("")) {
@@ -663,7 +672,8 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         //exitPanel3.add(manualLabel);
         //exitPanel3.add(manual_button);
 
-        JLabel cofigFilePath_label = new JLabel(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile);
+////        JLabel cofigFilePath_label = new JLabel(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile);
+//        JLabel cofigFilePath_label = new JLabel(Functions.getConfigSaveDir() + GlobalEnv.configFile);
 
         if (GlobalEnv.radio1Selected == 1) { // なしがtrueのとき
             GlobalEnv.radio1[0] = new JRadioButton("あり");
@@ -682,6 +692,15 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             GlobalEnv.radio2[1] = new JRadioButton("English", true);
             repaint();
         }
+        if (GlobalEnv.configSaveDirRadioSelected == 0) { // ホームディレクトリがtrueのとき
+            GlobalEnv.configSaveDirRadio[0] = new JRadioButton("ホームディレクトリ", true);
+            GlobalEnv.configSaveDirRadio[1] = new JRadioButton("SSeditディレクトリ");
+            repaint();
+        } else {
+            GlobalEnv.configSaveDirRadio[0] = new JRadioButton("ホームディレクトリ");
+            GlobalEnv.configSaveDirRadio[1] = new JRadioButton("SSeditディレクトリ", true);
+            repaint();
+        }
         // ButtonGroup でグループ化することにより、グループ内のオン状態のボタンが常にひとつになるように制御することができる
         ButtonGroup bg1 = new ButtonGroup();
         bg1.add(GlobalEnv.radio1[0]);
@@ -693,17 +712,31 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         group1.add(GlobalEnv.radio1[1]);
         group1.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        // ボタングループ
+        // radio2
         ButtonGroup bglang = new ButtonGroup();
         bglang.add(GlobalEnv.radio2[0]);
-        bglang.add(GlobalEnv.radio2[1]);
+        bglang.add(GlobalEnv.radio2[1]);	//[重要]これを消すと単一選択できなくなる
         JPanel lang = new JPanel();
-
         lang.setLayout(new FlowLayout());
         lang.add(langLabel);
         lang.add(GlobalEnv.radio2[0]);
         lang.add(GlobalEnv.radio2[1]);
         lang.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        // configSaveDirRadio
+        ButtonGroup bgConfigSaveDir = new ButtonGroup();
+        bgConfigSaveDir.add(GlobalEnv.configSaveDirRadio[0]);
+        bgConfigSaveDir.add(GlobalEnv.configSaveDirRadio[1]);	//[重要]これを消すと単一選択できなくなる
+        JPanel configSaveDir = new JPanel();
+        configSaveDir.setLayout(new FlowLayout());
+        configSaveDir.add(configSaveDirLabel);
+        configSaveDir.add(GlobalEnv.configSaveDirRadio[0]);
+        configSaveDir.add(GlobalEnv.configSaveDirRadio[1]);
+        configSaveDir.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        
+        
+
 
         JPanel tab = new JPanel();
         tabCombo.setPreferredSize(new Dimension(60, 30));
@@ -719,6 +752,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         GlobalEnv.radio2[0].addChangeListener(this); // ラジオボタンにチェンジリスナーを登録
         GlobalEnv.radio2[1].addChangeListener(this);
+        
+        GlobalEnv.configSaveDirRadio[0].addChangeListener(this);
+        GlobalEnv.configSaveDirRadio[1].addChangeListener(this);
+        
+        
 
         setting_Top_Panel.add(settingPanel2);
         // configファイルの編集パネル
@@ -737,7 +775,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         settingPanel.setLayout(GlobalEnv.gbl);
         GlobalEnv.urlCombo.setEditable(true);
 
-        Functions.addPanel(configPanel, cofigFilePath_label, 0, 0, 1, 1);
+//        Functions.addPanel(configPanel, cofigFilePath_label, 0, 0, 1, 1);
         Functions.addPanel(configPanel, config_driverLabel, 0, 1, 1, 1);
         Functions.addPanel(configPanel, driverCombo, 1, 1, 1, 1);
         Functions.addPanel(configPanel, p, 2, 1, 1, 1);
@@ -784,6 +822,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         Functions.addPanel(configPanel, rhome_path_Panel, 0, 10, 1, 1);
         Functions.addPanel(configPanel, GlobalEnv.rhome_pathField, 1, 10, 4, 1);
+        
+        Functions.addPanel(configPanel, configSaveDirLabel, 0, 11, 1, 1);
+        Functions.addPanel(configPanel, configSaveDir, 1, 11, 4, 1);
 
         
         
@@ -1016,7 +1057,8 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         timer3 = new Timer(readDelay, new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 if (!tmp.equals(GlobalEnv.textPane.getText())) {
-                    GlobalEnv.outdirPath = Functions.change(Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "outdir"));
+//                    GlobalEnv.outdirPath = Functions.change(Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "outdir"));
+                    GlobalEnv.outdirPath = Functions.change(Functions.has(Functions.getConfigSaveDir() + GlobalEnv.configFile, "outdir"));
                     if(GlobalEnv.outdirPath.equals("")){
                         GlobalEnv.outdirPath = GlobalEnv.folderPath;
                     }
@@ -1223,7 +1265,6 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         });
 
         selectoutdir_button.addActionListener(new AbstractAction(){
-
                 public void actionPerformed(ActionEvent arg0) {
                     JFileChooser filechooser = new JFileChooser(GlobalEnv.USER_HOME);
 
@@ -1345,9 +1386,13 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 else
                     GlobalEnv.radio1Selected = 1; // なし
                 if (GlobalEnv.radio2[0].isSelected())
-                    GlobalEnv.radio2Selected = 0; // あり
+                    GlobalEnv.radio2Selected = 0; // Japanese
                 else
-                    GlobalEnv.radio2Selected = 1; // なし
+                    GlobalEnv.radio2Selected = 1; // English
+                if (GlobalEnv.configSaveDirRadio[0].isSelected())
+                	GlobalEnv.configSaveDirRadioSelected = 0; // ホームディレクトリ
+                else
+                	GlobalEnv.configSaveDirRadioSelected = 1; // SSeditディレクトリ
 
                 String tabstr;
                 tabstr = (String) tabCombo.getSelectedItem();
@@ -1355,7 +1400,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 CaretState.changeTabSize(tabSize, GlobalEnv.textPane, GlobalEnv.doc);
 
                 if (Functions.createConfig()) {
-                    System.out.println("設定ファイル保存完了");
+//                    System.out.println("設定ファイル保存完了");
                     Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.ssql");
                     Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.html");
                     Functions.deleteFile(GlobalEnv.outdirPath, ".errorlog.txt");
@@ -1367,19 +1412,19 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                     if (GlobalEnv.outdirPath.equals("")) {
                         GlobalEnv.outdirPath = GlobalEnv.folderPath;
                     }
-                    if (GlobalEnv.radio2[0].isSelected()) {
-//						JOptionPane.showMessageDialog(null, "保存しました");// masato
-
-                    } else {
-//						JOptionPane.showMessageDialog(null, "Save Successfully");
-                    }
-                } else {
-                    System.out.println("設定ファイル保存失敗");
-//					if (GlobalEnv.radio2[0].isSelected())
-//						JOptionPane.showMessageDialog(null, "保存に失敗しました");// masato
-//					else
-//						JOptionPane.showMessageDialog(null, "faled to save");
-                }
+//                    if (GlobalEnv.radio2[0].isSelected()) {
+////						JOptionPane.showMessageDialog(null, "保存しました");// masato
+//                    } else {
+////						JOptionPane.showMessageDialog(null, "Save Successfully");
+//                    }
+                } 
+//                else {
+//                    System.out.println("設定ファイル保存失敗");
+////					if (GlobalEnv.radio2[0].isSelected())
+////						JOptionPane.showMessageDialog(null, "保存に失敗しました");// masato
+////					else
+////						JOptionPane.showMessageDialog(null, "faled to save");
+//                }
                 button3.setEnabled(true);
             }
         });

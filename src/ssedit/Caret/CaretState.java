@@ -40,7 +40,8 @@ protected static boolean flag = false;
 	// エラーログからエラーの箇所を探し、その文字を返す
 	public String[] checkError() {
 		String[] errorstr = { "", "" };
-		String tmp = Functions.readFile(Functions.change(Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "outdir"))
+//		String tmp = Functions.readFile(Functions.change(Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "outdir"))
+		String tmp = Functions.readFile(Functions.change(Functions.has(Functions.getConfigSaveDir() + GlobalEnv.configFile, "outdir"))
 				+ GlobalEnv.OS_FS + ".errorlog.txt");
 		String regex = "\\>>>> (.*)\\ <<<<";
 		String regex2 = "\\<<<< (.*)\\  ##";

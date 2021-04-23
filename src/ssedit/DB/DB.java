@@ -33,9 +33,11 @@ public class DB {
 		// SSeditを「-Djava.library.path=.;C:\XXX\SSedit\SSedit_20210405\libs」付きで起動させなくてOKにするため
 		setJavaLibPath();			//TODO Azure Windows Java15だとうまくいかない	java.lang.NoSuchFieldException: sys_paths	2021/4/6
 		
+//		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+		String config_fn = Functions.getConfigSaveDir()+ GlobalEnv.configFile;
 		
 		GlobalEnv.tabledata.clear();
-		File file = new File(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile);
+		File file = new File(config_fn);
 		// 使用しているドライバー
 		String driver = "";
 		// データベースのパス
@@ -48,14 +50,14 @@ public class DB {
 //		String outdir = "";
 
 		if(file.exists()){
-			driver = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "driver");
-			db = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "db");
-			host = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "host");
-			user = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "user");
-			String password = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "password"); 
-			String port = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "port"); 
-	//		outdir = Common.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "outdir");
-	//		if(Common.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "outdir").isEmpty() && !GlobalEnv.folderPath.isEmpty()){
+			driver = Functions.has(config_fn, "driver");
+			db = Functions.has(config_fn, "db");
+			host = Functions.has(config_fn, "host");
+			user = Functions.has(config_fn, "user");
+			String password = Functions.has(config_fn, "password"); 
+			String port = Functions.has(config_fn, "port"); 
+	//		outdir = Common.has(config_fn, "outdir");
+	//		if(Common.has(config_fn, "outdir").isEmpty() && !GlobalEnv.folderPath.isEmpty()){
 	//			GlobalEnv.outdirPath = GlobalEnv.folderPath;
 	//			GlobalEnv.config_outdirField.setText(GlobalEnv.outdirPath);
 	//		}
@@ -85,8 +87,8 @@ public class DB {
 					// 	-> 50個以上あるため、optionsへ ; 区切りで記述できる形で実装
 					String url = "jdbc:sqlserver://";
 					if(host != null && !host.equals("")){
-						String instanceName = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "sqlserver_instance").trim();
-						String options = Functions.has(GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile, "sqlserver_options").trim();
+						String instanceName = Functions.has(config_fn, "sqlserver_instance").trim();
+						String options = Functions.has(config_fn, "sqlserver_options").trim();
 
 						url += host.trim();																			//serverName
 						if(instanceName != null && !instanceName.equals(""))	url += "\\"+instanceName.trim();	//instanceName

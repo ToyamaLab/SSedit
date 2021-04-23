@@ -77,7 +77,7 @@ public class Functions {
 			if(isWindows()){
 				return str;
 			} else {
-			return str.substring(0, str.lastIndexOf(GlobalEnv.OS_LS));
+				return str.substring(0, str.lastIndexOf(GlobalEnv.OS_LS));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -85,7 +85,7 @@ public class Functions {
 		}
 	}
 
-	// Create file
+	// ファイル作成
 	public static boolean createFile(String filename, String s) {
 		try {
 //			s = s.replaceAll(GlobalEnv.OS_LS + "$", ""); // 末尾の改行コードを削除
@@ -98,6 +98,32 @@ public class Functions {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+	
+	// ディレクトリ作成 (再帰的に)
+	public static boolean createDir(String dir_name) {
+		try {
+			File dir = new File(dir_name);
+			if (!dir.exists()) {
+				return dir.mkdirs();
+			}
+		} catch (Exception e) {
+		}
+		return false;
+	}
+	
+	// ディレクトリ削除 (再帰的に)
+	public static boolean deleteDir(String dir_name) {
+		return deleteDir(new File(dir_name));
+	}
+	public static boolean deleteDir(File dir_name) {
+	    File[] l = dir_name.listFiles();
+	    if (l != null) {
+	        for (File file : l) {
+	        	deleteDir(file);
+	        }
+	    }
+	    return dir_name.delete();
 	}
 	
 	// 配列同士の結合用  array1[]+array2[]
@@ -116,7 +142,8 @@ public class Functions {
 	 */
 	//.ssql 保存
 	public static boolean createConfig(){
-		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+//		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+		String config_fn = getConfigSaveDir() + GlobalEnv.configFile;
 		
 		String driver = "";
 		String db = "";
@@ -172,20 +199,27 @@ public class Functions {
 		
 		History.addItem(GlobalEnv.urlCombo, (String)GlobalEnv.urlCombo.getEditor().getItem(), 5);
 		try {
+			create_or_delete_config_dir();		//前処理
+			
 //			String s = driver + GlobalEnv.OS_LS + db + GlobalEnv.OS_LS + host + GlobalEnv.OS_LS + user + GlobalEnv.OS_LS + outdir;
 			PrintWriter pw;
 			pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream(config_fn), GlobalEnv.getEncoding())));
 			pw.println(s);
 			pw.close();
+			System.out.println(".ssql保存完了");
 			return true;
 		} catch (Exception e) {
+			System.out.println(".ssql保存失敗");
 			return false;
 		}
 	}
 	// .ssql 反映
 	public static void reflectConfig(){
-		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+		System.out.println(".ssql反映開始");
+//		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+		String config_fn = getConfigSaveDir() + GlobalEnv.configFile;
+		System.out.println("config_fn = "+config_fn);
 		
 		GlobalEnv.driverModel.setSelectedItem(has(config_fn, "driver"));
 		GlobalEnv.config_hostField.setText(has(config_fn, "host"));
@@ -196,18 +230,20 @@ public class Functions {
 		GlobalEnv.config_userField.setText(has(config_fn, "user"));
 		GlobalEnv.config_passwordField.setText(has(config_fn, "password"));
 		//GlobalEnv.outdirCombo.setSelectedItem(has(config_fn, "outdir"));		//TODO
+		System.out.println(".ssql反映完了");
 	}
 	
 	/*
 	 * .ssqltool 保存/反映
 	 */
-	static String config_fn_ssqltool = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool";
+//	static String config_fn_ssqltool = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + ".ssqltool";
 	// .ssqltool 保存
     // 閉じる前に、開いていたクエリ名・ディレクトリ等の情報を、ホームの「.ssqltool」へ保存
     public static void saveSSQLtoolInfo(String folderPath1, String fileName1) {
         // GlobalEnv.folderPath1: タブ1のフォルダ
         // fileName1: タブ1のファイル名
         // GlobalEnv.folderPath2: タブ2のフォルダ
+    	String config_fn_ssqltool = getConfigSaveDir() + ".ssqltool";
         String s = "";
         s += "folderPath1=" + folderPath1 + "" + GlobalEnv.OS_LS + "";
         s += "fileName1=" + fileName1 + "" + GlobalEnv.OS_LS + "";
@@ -230,26 +266,33 @@ public class Functions {
 		if(!GlobalEnv.rhome_pathField.getText().equals("")){
 			s += "rhome_path=" + GlobalEnv.rhome_pathField.getText() + "" + GlobalEnv.OS_LS + "";
 		}
+        s += "configSaveDirRadioSelected=" + GlobalEnv.configSaveDirRadioSelected + "" + GlobalEnv.OS_LS + "";
 
-        Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.ssql");
-        Functions.deleteFile(GlobalEnv.outdirPath, ".htmlViewer.html");
-        Functions.deleteFile(GlobalEnv.outdirPath, ".errorlog.txt");
-        Functions.createFile(config_fn_ssqltool, s);
+    	create_or_delete_config_dir();	//前処理
+        deleteFile(GlobalEnv.outdirPath, ".htmlViewer.ssql");
+        deleteFile(GlobalEnv.outdirPath, ".htmlViewer.html");
+        deleteFile(GlobalEnv.outdirPath, ".errorlog.txt");
+        createFile(config_fn_ssqltool, s);
+        System.out.println(".ssqltool保存完了");
     }
     // .ssqltool 反映
     // 前回の情報（開いていたフォルダ・ファイル）を、ホームの「.ssqltool」から読み込んで反映
     public static void reflectSSQLtoolInfo() {
-        String fP1 = Functions.has(config_fn_ssqltool, "folderPath1");
-        String fN1 = Functions.has(config_fn_ssqltool, "fileName1");
+        System.out.println(".ssqltool反映開始");
+    	String config_fn_ssqltool = getConfigSaveDir() + ".ssqltool";
+    	System.out.println("config_fn_ssqltool = "+config_fn_ssqltool);
+    	
+        String fP1 = has(config_fn_ssqltool, "folderPath1");
+        String fN1 = has(config_fn_ssqltool, "fileName1");
 
         if (!fP1.equals("") && new File(fP1).exists()){
             GlobalEnv.folderPath = fP1;
         }
         if (!fN1.equals("") && new File(fN1).exists()) {
             FrontEnd.filenameLabel.setText(new File(fN1).getName());
-            GlobalEnv.textPane.setText(Functions.readFile(fN1));
+            GlobalEnv.textPane.setText(readFile(fN1));
             FrontEnd.currentfileName = new File(fN1).getName();
-            FrontEnd.currentfileData = Functions.readFile(fN1);
+            FrontEnd.currentfileData = readFile(fN1);
         } else {
             if (GlobalEnv.radio2Selected == 0){
                 GlobalEnv.textPane.setText("");
@@ -260,29 +303,29 @@ public class Functions {
 
         }
         try {
-            GlobalEnv.radio1Selected = Integer.parseInt(Functions.has(config_fn_ssqltool, "radio1Selected"));
-            GlobalEnv.radio2Selected = Integer.parseInt(Functions.has(config_fn_ssqltool, "radio2Selected"));
+            GlobalEnv.radio1Selected = Integer.parseInt(has(config_fn_ssqltool, "radio1Selected"));
+            GlobalEnv.radio2Selected = Integer.parseInt(has(config_fn_ssqltool, "radio2Selected"));
         } catch (Exception e) {
             GlobalEnv.radio1Selected = 0;
             GlobalEnv.radio2Selected = 0;
         }
         try {
-            FrontEnd.tabSize = Integer.parseInt(Functions.has(config_fn_ssqltool, "tabSize"));
+            FrontEnd.tabSize = Integer.parseInt(has(config_fn_ssqltool, "tabSize"));
             FrontEnd.tabCombo.setSelectedIndex(FrontEnd.tabSize - 1);
             CaretState.changeTabSize(FrontEnd.tabSize, GlobalEnv.textPane, GlobalEnv.doc);
         } catch (Exception e) {
         	FrontEnd.tabSize = 3;
         }
 //		GlobalEnv.url_textField.setText(Common.has(config_fn_ssqltool, "url"));
-        String[] urlStr = Functions.has(config_fn_ssqltool, "urlHistory").split(",");
+        String[] urlStr = has(config_fn_ssqltool, "urlHistory").split(",");
         for(int i = 0; i < urlStr.length; i++){
             GlobalEnv.urlModel.addElement(urlStr[i]);
         }
-        String[] folderStr = Functions.has(config_fn_ssqltool, "folderHistory").split(",");
+        String[] folderStr = has(config_fn_ssqltool, "folderHistory").split(",");
         for(int i = 0; i < folderStr.length; i++){
             GlobalEnv.folderModel.addElement(folderStr[i]);
         }
-        String[] outdirStr = Functions.has(config_fn_ssqltool, "outdirHistory").split(",");
+        String[] outdirStr = has(config_fn_ssqltool, "outdirHistory").split(",");
         for(int i = 0; i < outdirStr.length; i++){
             GlobalEnv.outdirModel.addElement(outdirStr[i]);
         }
@@ -299,11 +342,40 @@ public class Functions {
       		FrontEnd.label_size.setText(Edit.size+"");
 		} catch (Exception e) { }
 		GlobalEnv.rhome_pathField.setText(has(config_fn_ssqltool, "rhome_path"));
+        try {
+            GlobalEnv.configSaveDirRadioSelected = Integer.parseInt(has(config_fn_ssqltool, "configSaveDirRadioSelected"));
+        } catch (Exception e) {
+            GlobalEnv.configSaveDirRadioSelected = 0;
+        }
         Edit.setLinePane();
+        System.out.println(".ssqltool反映完了");
     }
+    
+	/*
+	 * .ssql, .ssqltool 保存前処理
+	 */
+	// create_or_delete_config_dir()
+	private static void create_or_delete_config_dir() {
+    	if (GlobalEnv.configSaveDirRadioSelected==1) {	//SSeditディレクトリが選択されていたとき
+    		// SSedit/config/<ユーザー名>ディレクトリが無い場合は作成
+    		boolean createDirResult = createDir(getConfigSaveDir());
+    		System.out.println("createDir = " + createDirResult);
+    	} else {
+    		// SSedit/config/<ユーザー名>ディレクトリがある場合は削除	//[重要]SSedit起動時、configをどこから読むかの判定に使用
+    		GlobalEnv.configSaveDirRadioSelected = 1;
+    		File ssedit_config_dir = new File(getConfigSaveDir());
+    		GlobalEnv.configSaveDirRadioSelected = 0;
+    		if (ssedit_config_dir.exists()) {
+				boolean b = deleteDir(ssedit_config_dir);
+				System.out.println("ディレクトリ削除: "+(b?"成功":"失敗")+"  "+ssedit_config_dir);
+			}else {
+				System.out.println("ディレクトリ削除: 存在しないため未実行  "+ssedit_config_dir);
+			}
+    	}
+	}
     /******************************************************************************************************************/
 
-
+    //jarが置かれているディレクトリのパス
 	public static String getWorkingDir(){
 		String workingDir = new File(GlobalEnv.EXE_FILE_PATH).getAbsolutePath(); // 実行jarファイルの絶対パスを取得
 //		if(isWindows()){
@@ -322,6 +394,17 @@ public class Functions {
 			workingDir = workingDir.substring(0, workingDir.lastIndexOf(GlobalEnv.OS_FS));
 		}
 		return workingDir;
+	}
+	
+	//.ssql, .ssqltoolの保存ディレクトリのパス
+	public static String getConfigSaveDir() {
+    	if (GlobalEnv.configSaveDirRadioSelected==0) {
+    		//ホームディレクトリのパス
+    		return GlobalEnv.USER_HOME + GlobalEnv.OS_FS;
+    	} else {
+    		//SSeditディレクトリ (SSedit/config/<ユーザー名>) のパス
+			return new File(getWorkingDir() + GlobalEnv.OS_FS + "config" + GlobalEnv.OS_FS + System.getProperty("user.name")).getAbsolutePath() + GlobalEnv.OS_FS;
+		}
 	}
 
 	// ライブラリの絶対パスを取得
@@ -386,7 +469,8 @@ public class Functions {
 
 	// 生成されたファイルの出力先を返す
 	public static String getOutdir(String folder) {
-		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+//		String config_fn = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+		String config_fn = getConfigSaveDir() + GlobalEnv.configFile;
 		String outdir = change(has(config_fn, "outdir"));
 		if (outdir.equals(""))
 			outdir = folder;
@@ -403,9 +487,21 @@ public class Functions {
 		HashMap<String,String> targetMap = new HashMap<String,String>();
 		if(file_targetMap.containsKey(fn)){
 			// 2回目以降 Mapから取得
+			//System.out.println("2回目以降 Mapから取得: "+fn+"  "+filename+"   "+target);
 			targetMap = file_targetMap.get(fn);
 		}else{
 			// 初回のみ ファイル読み込み
+			System.out.println("初回のみ ファイル読み込み: "+fn+"  "+filename+"   "+target);
+			
+			if (GlobalEnv.configSaveDirRadioSelected==0) {	// SSedit起動時、まだ選択が反省されていないとき用
+				GlobalEnv.configSaveDirRadioSelected = 1;
+				if (new File(getConfigSaveDir()).exists()) {	// SSedit/config/<ユーザー名>ディレクトリが存在する場合
+					filename = getConfigSaveDir() + fn;			// SSedit/config/<ユーザー名>/[.ssql|config.ssql|.ssqltool]へファイル名を変更
+					System.out.println("初回のみ ファイル読み込み(再): "+fn+"  "+filename+"   "+target);
+				} else {
+					GlobalEnv.configSaveDirRadioSelected = 0;	// 存在しない場合は0に戻す
+				}
+			}
 //				BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), GlobalEnv.getEncoding()));
 //				String line;
 //				while ((line = br.readLine()) != null) {
@@ -428,9 +524,10 @@ public class Functions {
 	}
 	// タブ切替時にファイルからDB接続情報を再取得
 	public static void getDBCongigFromFile() {
-		String filename = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
-		String fn = new File(filename).getName();
-		getDBCongigFromFile(filename, fn);
+//		String filename = GlobalEnv.USER_HOME + GlobalEnv.OS_FS + GlobalEnv.configFile;
+		String config_fn = getConfigSaveDir() + GlobalEnv.configFile;
+		String fn = new File(config_fn).getName();
+		getDBCongigFromFile(config_fn, fn);
 	}
 	// 初回/タブ切替時にファイルからDB接続情報を取得
 	private static HashMap<String, String> getDBCongigFromFile(String filename, String fn) {
@@ -632,8 +729,8 @@ public class Functions {
 		GlobalEnv.currentTable_array.clear();
 		GlobalEnv.alias_array.clear();
 
-		Functions.searchFrom();
-		Functions.searchWhere();
+		searchFrom();
+		searchWhere();
 
 		String data = GlobalEnv.textPane.getText();
 		data = data.substring(GlobalEnv.fromEnd, GlobalEnv.whereStart);
@@ -804,7 +901,7 @@ public class Functions {
 			try {
 				if(GlobalEnv.textPane.getText(i, 1).equals(".")){
 					for(int j = i-1; j > 0; j--){
-						if(!Functions.checkChar(j, "\\w")){
+						if(!checkChar(j, "\\w")){
 							alias = GlobalEnv.textPane.getText(j + 1, count);
 							return alias;
 						}
