@@ -264,6 +264,9 @@ public class Functions {
 			s += "text_size=" + Edit.size + "" + GlobalEnv.OS_LS + "";
 		}
         s += "optimizerRadioSelected=" + GlobalEnv.optimizerRadioSelected + "" + GlobalEnv.OS_LS + "";
+		if(!GlobalEnv.exec_ssql_argsField.getText().equals("")){
+			s += "exec_ssql_args=" + GlobalEnv.exec_ssql_argsField.getText() + "" + GlobalEnv.OS_LS + "";
+		}
 		if(!GlobalEnv.rhome_pathField.getText().equals("")){
 			s += "rhome_path=" + GlobalEnv.rhome_pathField.getText() + "" + GlobalEnv.OS_LS + "";
 		}
@@ -347,6 +350,7 @@ public class Functions {
         } catch (Exception e) {
             GlobalEnv.optimizerRadioSelected = 0;
         }
+		GlobalEnv.exec_ssql_argsField.setText(has(config_fn_ssqltool, "exec_ssql_args"));
 		GlobalEnv.rhome_pathField.setText(has(config_fn_ssqltool, "rhome_path"));
         try {
             GlobalEnv.configSaveDirRadioSelected = Integer.parseInt(has(config_fn_ssqltool, "configSaveDirRadioSelected"));

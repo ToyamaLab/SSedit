@@ -202,6 +202,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JLabel config_outdirLabel = new JLabel("出力先：");
     JLabel config_pathLabel = new JLabel("URL指定：");
     JLabel optimizerLabel = new JLabel("オプティマイザ：");										//オプティマイザOn/Off
+    JLabel exec_ssql_args_Panel = new JLabel("実行引数：");									//任意のSSQL実行引数
     JLabel rhome_path_Panel = new JLabel("Rをインストールしたフォルダのパス(ggplot関数用)：");		//$R_HOME
     JLabel configSaveDirLabel = new JLabel("設定情報の保存場所：");								//.ssql, .ssqltoolの保存場所
     JPanel configPanel = new JPanel();
@@ -846,13 +847,15 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         Functions.addPanel(configPanel, optimizerLabel, 0, 10, 1, 1);
         Functions.addPanel(configPanel, optimizerPanel, 1, 10, 4, 1);
-        Functions.addPanel(configPanel, rhome_path_Panel, 0, 11, 1, 1);
-        Functions.addPanel(configPanel, GlobalEnv.rhome_pathField, 1, 11, 4, 1);
+        Functions.addPanel(configPanel, exec_ssql_args_Panel, 0, 11, 1, 1);
+        Functions.addPanel(configPanel, GlobalEnv.exec_ssql_argsField, 1, 11, 4, 1);
+        Functions.addPanel(configPanel, rhome_path_Panel, 0, 12, 1, 1);
+        Functions.addPanel(configPanel, GlobalEnv.rhome_pathField, 1, 12, 4, 1);
         
-        Functions.addPanel(configPanel, new JSeparator(), 0, 12, 5, 1);		//横線
+        Functions.addPanel(configPanel, new JSeparator(), 0, 13, 5, 1);		//横線
         
-        Functions.addPanel(configPanel, configSaveDirLabel, 0, 13, 1, 1);
-        Functions.addPanel(configPanel, configSaveDir, 1, 13, 4, 1);
+        Functions.addPanel(configPanel, configSaveDirLabel, 0, 14, 1, 1);
+        Functions.addPanel(configPanel, configSaveDir, 1, 14, 4, 1);
 
         
         

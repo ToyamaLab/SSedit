@@ -66,6 +66,7 @@ public class GlobalEnv {
 	public static JTextField config_userField = new JTextField();
 //	public static JTextField config_passwordField = new JTextField();
 	public static JTextField config_passwordField = new JPasswordField();
+	public static JTextField exec_ssql_argsField = new JTextField();
 	public static JTextField rhome_pathField = new JTextField();
 //	static JTextField config_outdirField = new JTextField();
 //	static JTextField url_textField = new JTextField();
