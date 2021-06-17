@@ -263,6 +263,7 @@ public class Functions {
 		if(Edit.size > 0 ){
 			s += "text_size=" + Edit.size + "" + GlobalEnv.OS_LS + "";
 		}
+        s += "optimizerRadioSelected=" + GlobalEnv.optimizerRadioSelected + "" + GlobalEnv.OS_LS + "";
 		if(!GlobalEnv.rhome_pathField.getText().equals("")){
 			s += "rhome_path=" + GlobalEnv.rhome_pathField.getText() + "" + GlobalEnv.OS_LS + "";
 		}
@@ -341,6 +342,11 @@ public class Functions {
       		FrontEnd.label_size.setFont(Edit.defaultEditFont);
       		FrontEnd.label_size.setText(Edit.size+"");
 		} catch (Exception e) { }
+        try {
+            GlobalEnv.optimizerRadioSelected = Integer.parseInt(has(config_fn_ssqltool, "optimizerRadioSelected"));
+        } catch (Exception e) {
+            GlobalEnv.optimizerRadioSelected = 0;
+        }
 		GlobalEnv.rhome_pathField.setText(has(config_fn_ssqltool, "rhome_path"));
         try {
             GlobalEnv.configSaveDirRadioSelected = Integer.parseInt(has(config_fn_ssqltool, "configSaveDirRadioSelected"));

@@ -151,6 +151,9 @@ public class SSQL_exec extends FrontEnd implements Runnable {
     	if (GlobalEnv.configSaveDirRadioSelected == 1) {	//SSedit/config/<ユーザー名>以下のconfigを読む  "-c"追加
     		command = Functions.arrayConcat(command, new String[]{"-c", Functions.getConfigSaveDir() + GlobalEnv.configFile});
     	}
+    	if (GlobalEnv.optimizerRadioSelected == 1) {	//オプティマイザOff "-singlequery"追加
+    		command = Functions.arrayConcat(command, new String[]{"-singlequery"});
+    	}
     	if (GlobalEnv.isLoggerOn()) {	//logger on
     		System.out.println("logger on");
     		command = Functions.arrayConcat(command, new String[]{"-logger", "on"});

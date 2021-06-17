@@ -201,6 +201,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JLabel config_passwordLabel = new JLabel("パスワード：");
     JLabel config_outdirLabel = new JLabel("出力先：");
     JLabel config_pathLabel = new JLabel("URL指定：");
+    JLabel optimizerLabel = new JLabel("オプティマイザ：");										//オプティマイザOn/Off
     JLabel rhome_path_Panel = new JLabel("Rをインストールしたフォルダのパス(ggplot関数用)：");		//$R_HOME
     JLabel configSaveDirLabel = new JLabel("設定情報の保存場所：");								//.ssql, .ssqltoolの保存場所
     JPanel configPanel = new JPanel();
@@ -692,14 +693,23 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             GlobalEnv.radio2[1] = new JRadioButton("English", true);
             repaint();
         }
-        if (GlobalEnv.configSaveDirRadioSelected == 0) { // ホームディレクトリがtrueのとき
-            GlobalEnv.configSaveDirRadio[0] = new JRadioButton("ホームディレクトリ", true);
-            GlobalEnv.configSaveDirRadio[1] = new JRadioButton("SSeditディレクトリ");
+        if (GlobalEnv.optimizerRadioSelected == 0) {
+            GlobalEnv.optimizerRadio[0] = new JRadioButton("On", true);
+            GlobalEnv.optimizerRadio[1] = new JRadioButton("Off");
             repaint();
         } else {
-            GlobalEnv.configSaveDirRadio[0] = new JRadioButton("ホームディレクトリ");
-            GlobalEnv.configSaveDirRadio[1] = new JRadioButton("SSeditディレクトリ", true);
+            GlobalEnv.optimizerRadio[0] = new JRadioButton("On");
+            GlobalEnv.optimizerRadio[1] = new JRadioButton("Off", true);
             repaint();
+        }
+        if (GlobalEnv.configSaveDirRadioSelected == 0) { // ホームディレクトリがtrueのとき
+        	GlobalEnv.configSaveDirRadio[0] = new JRadioButton("ホームディレクトリ", true);
+        	GlobalEnv.configSaveDirRadio[1] = new JRadioButton("SSeditディレクトリ");
+        	repaint();
+        } else {
+        	GlobalEnv.configSaveDirRadio[0] = new JRadioButton("ホームディレクトリ");
+        	GlobalEnv.configSaveDirRadio[1] = new JRadioButton("SSeditディレクトリ", true);
+        	repaint();
         }
         // ButtonGroup でグループ化することにより、グループ内のオン状態のボタンが常にひとつになるように制御することができる
         ButtonGroup bg1 = new ButtonGroup();
@@ -722,6 +732,17 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         lang.add(GlobalEnv.radio2[0]);
         lang.add(GlobalEnv.radio2[1]);
         lang.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        // optimizerRadio
+        ButtonGroup bgOptimizerDir = new ButtonGroup();
+        bgOptimizerDir.add(GlobalEnv.optimizerRadio[0]);
+        bgOptimizerDir.add(GlobalEnv.optimizerRadio[1]);	//[重要]これを消すと単一選択できなくなる
+        JPanel optimizerPanel = new JPanel();
+        optimizerPanel.setLayout(new FlowLayout());
+        optimizerPanel.add(optimizerLabel);
+        optimizerPanel.add(GlobalEnv.optimizerRadio[0]);
+        optimizerPanel.add(GlobalEnv.optimizerRadio[1]);
+        optimizerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         
         // configSaveDirRadio
         ButtonGroup bgConfigSaveDir = new ButtonGroup();
@@ -752,6 +773,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         GlobalEnv.radio2[0].addChangeListener(this); // ラジオボタンにチェンジリスナーを登録
         GlobalEnv.radio2[1].addChangeListener(this);
+        
+        GlobalEnv.optimizerRadio[0].addChangeListener(this);
+        GlobalEnv.optimizerRadio[1].addChangeListener(this);
         
         GlobalEnv.configSaveDirRadio[0].addChangeListener(this);
         GlobalEnv.configSaveDirRadio[1].addChangeListener(this);
@@ -820,11 +844,15 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
         Functions.addPanel(configPanel, new JSeparator(), 0, 9, 5, 1);		//横線
 
-        Functions.addPanel(configPanel, rhome_path_Panel, 0, 10, 1, 1);
-        Functions.addPanel(configPanel, GlobalEnv.rhome_pathField, 1, 10, 4, 1);
+        Functions.addPanel(configPanel, optimizerLabel, 0, 10, 1, 1);
+        Functions.addPanel(configPanel, optimizerPanel, 1, 10, 4, 1);
+        Functions.addPanel(configPanel, rhome_path_Panel, 0, 11, 1, 1);
+        Functions.addPanel(configPanel, GlobalEnv.rhome_pathField, 1, 11, 4, 1);
         
-        Functions.addPanel(configPanel, configSaveDirLabel, 0, 11, 1, 1);
-        Functions.addPanel(configPanel, configSaveDir, 1, 11, 4, 1);
+        Functions.addPanel(configPanel, new JSeparator(), 0, 12, 5, 1);		//横線
+        
+        Functions.addPanel(configPanel, configSaveDirLabel, 0, 13, 1, 1);
+        Functions.addPanel(configPanel, configSaveDir, 1, 13, 4, 1);
 
         
         
@@ -1389,6 +1417,10 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                     GlobalEnv.radio2Selected = 0; // Japanese
                 else
                     GlobalEnv.radio2Selected = 1; // English
+                if (GlobalEnv.optimizerRadio[0].isSelected())
+                	GlobalEnv.optimizerRadioSelected = 0; // On
+                else
+                	GlobalEnv.optimizerRadioSelected = 1; // Off
                 if (GlobalEnv.configSaveDirRadio[0].isSelected())
                 	GlobalEnv.configSaveDirRadioSelected = 0; // ホームディレクトリ
                 else

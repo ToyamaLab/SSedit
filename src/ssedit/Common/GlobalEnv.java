@@ -243,6 +243,8 @@ public class GlobalEnv {
 	public static int radio1Selected = 0; // goto4 //どのラジオボタンが選択されていたか
 	public static JRadioButton[] radio2 = new JRadioButton[2];
 	public static int radio2Selected = 0;
+	public static JRadioButton[] optimizerRadio = new JRadioButton[2];
+	public static int optimizerRadioSelected = 0;
 	public static JRadioButton[] configSaveDirRadio = new JRadioButton[2];
 	public static int configSaveDirRadioSelected = 0;
 
