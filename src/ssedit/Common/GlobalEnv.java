@@ -149,6 +149,13 @@ public class GlobalEnv {
 		return GlobalEnv.encodingModel.getSelectedItem().toString();
 	}
 	
+	
+	// デフォルトSSQLクエリテンプレート
+	public static String getQueryTemplate(String medium) {
+		//return "GENERATE " + medium + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;";
+		return "GENERATE " + medium + " {\n\n}@{table}\nFROM ;";
+	}
+	
 
 	public static int searchStart = 0;
 

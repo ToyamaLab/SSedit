@@ -2243,7 +2243,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         int option = JOptionPane.showConfirmDialog(null,
                 "編集中のクエリを保存しますか？", "確認",
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-        String mediaData = (String) querycomboModel.getSelectedItem();
+        String medium = (String) querycomboModel.getSelectedItem();
 
         if (option == JOptionPane.YES_OPTION) {
             button4.doClick();
@@ -2252,11 +2252,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 queryCombo.setSelectedIndex(0);
                 return;
             }
-            GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
+            GlobalEnv.textPane.setText(GlobalEnv.getQueryTemplate(medium));
             filenameLabel.setText("");
             queryCombo.setSelectedIndex(0);
         } else if (option == JOptionPane.NO_OPTION) {
-            GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
+            GlobalEnv.textPane.setText(GlobalEnv.getQueryTemplate(medium));
             filenameLabel.setText("");
             queryCombo.setSelectedIndex(0);
         } else if(option == JOptionPane.CANCEL_OPTION){
@@ -2275,20 +2275,20 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             CaretState.changeTabSize(tabSize, GlobalEnv.textPane, GlobalEnv.doc);
         }
         if (e.getStateChange() == ItemEvent.SELECTED) {
-            String mediaData = (String) querycomboModel.getSelectedItem();
+            String medium = (String) querycomboModel.getSelectedItem();
             String query = GlobalEnv.textPane.getText();
-            if(mediaData.equals("クエリの新規作成")){
+            if(medium.equals("クエリの新規作成")){
                 return;
             } else {
                 if (query.equals(GlobalEnv.OS_LS + "")) {
-                    GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
+                    GlobalEnv.textPane.setText(GlobalEnv.getQueryTemplate(medium));
                     filenameLabel.setText("");
                     queryCombo.setSelectedIndex(0);
 //					currentState = queryCombo.getSelectedIndex();
                 } else {
                     // クエリが編集中だったとき（保存済み）
                     if(filestateLabel2.getText().equals("")){
-                        GlobalEnv.textPane.setText("GENERATE " + mediaData + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
+                        GlobalEnv.textPane.setText(GlobalEnv.getQueryTemplate(medium));
                         filenameLabel.setText("");
                         queryCombo.setSelectedIndex(0);
                     // 未保存だったら

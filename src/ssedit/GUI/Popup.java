@@ -90,10 +90,10 @@ public class Popup{
 //			Collections.sort(str_list);
 		}
 
-		public void createQuery(String media){
+		public void createQuery(String medium){
 			String query = GlobalEnv.textPane.getText();
 			if(query.trim().isEmpty() || FrontEnd.filestateLabel2.getText().isEmpty()){
-				GlobalEnv.textPane.setText("GENERATE " + media + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
+				GlobalEnv.textPane.setText(GlobalEnv.getQueryTemplate(medium));
 				FrontEnd.filenameLabel.setText("");
 			} else {
 				int option = JOptionPane.showConfirmDialog(null,
@@ -106,10 +106,10 @@ public class Popup{
 							|| FrontEnd.filestateLabel.getText().equals("キャンセルしました")){
 						return;
 					}
-					GlobalEnv.textPane.setText("GENERATE " + media + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
+					GlobalEnv.textPane.setText(GlobalEnv.getQueryTemplate(medium));
 					FrontEnd.filenameLabel.setText("");
 				} else if (option == JOptionPane.NO_OPTION) {
-					GlobalEnv.textPane.setText("GENERATE " + media + " {\n\n}@{debug = 'on', pbgcolor = 'aliceblue'}\nFROM ;");
+					GlobalEnv.textPane.setText(GlobalEnv.getQueryTemplate(medium));
 					FrontEnd.filenameLabel.setText("");
 				} else if(option == JOptionPane.CANCEL_OPTION){
 					FrontEnd.stateTimer.start();
