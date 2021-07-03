@@ -267,7 +267,12 @@ public class SSQL_exec extends FrontEnd implements Runnable {
 		
         ProcessBuilder pb = new ProcessBuilder(commands);
         pb.directory(new File(workingDir));
-        pb.redirectErrorStream(true);
+				// SSeditでのエラーを赤字出力にするために、redirectErrorStreamをfalseにした
+				// 以前まではtrueにしていたが、これは標準出力内のクエリの途中で警告が出るものがあり、
+				// それがエラー出力として最後に回されてしまうことがあり、それを回避するためであった。
+				// 標準出力とエラー出力をまとめて出力させるような方法があればSSQL側のログとSSedit側のログの順番を同じにしながら
+				// エラーを赤字出力にできるはず。
+        pb.redirectErrorStream(false);
         
         
         //[重要] rJava用 環境変数($R_HOME)の設定  							//TODO_old これで通るが他の位置で？ -> おそらくここでOK
