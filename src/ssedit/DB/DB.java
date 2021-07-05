@@ -263,17 +263,18 @@ public class DB {
 				System.out.println("newPath = "+newPath);
 				
 				System.setProperty("java.library.path", newPath);					// java.library.path を変更(この時点では反映されない)
-				Field sys_paths = ClassLoader.class.getDeclaredField("sys_paths");	// 以下3行: sys_paths フィールドに null を代入、これで次にライブラリーをロードするときに最新の java.library.path が参照される
-				sys_paths.setAccessible(true);
-				sys_paths.set(null, null);
-				
-				
-				
+				// sys_pathsをnullにする方法では実習環境(Linux)でテーブルリストが更新されなくなるため処理をスキップ
+				if (!Functions.isLinux()) { 
+					// usr_pathsを直接更新する方法ではうまくいかないことがあったのでsys_pathsをnullにする方法をとっている
+					Field sys_paths = ClassLoader.class.getDeclaredField("sys_paths");	// 以下3行: sys_paths フィールドに null を代入、これで次にライブラリーをロードするときに最新の java.library.path が参照される
+					sys_paths.setAccessible(true);
+					sys_paths.set(null, null);
 //			    final Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
 //			    usrPathsField.setAccessible(true);
 //			    //get array of paths
 //			    final String[] paths = (String[])usrPathsField.get(null);
 ////			    //check if the path to add is already present
+//// 					// うまくいかないケースがあるため以下チェック部分はコメントアウト
 ////			    for(String path : paths) {
 ////			        if(path.equals(newPath)) {
 ////			            return;
@@ -283,6 +284,7 @@ public class DB {
 //			    final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
 //			    newPaths[newPaths.length-1] = newPath;
 //			    usrPathsField.set(null, newPaths);
+				}
 			} catch (Exception e) {
 				System.out.println("setJavaLibPath() failed");
 				e.printStackTrace();
