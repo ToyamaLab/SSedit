@@ -251,6 +251,12 @@ public class DB {
 	// SSeditを「-Djava.library.path=.;C:\XXX\SSedit\SSedit_20210405\libs」付きで起動させなくてOKにするため
 	private static boolean alreadySetJavaLibPath = false;
 	private static void setJavaLibPath() {
+		if (Functions.isLinux()) {
+			// 以降のsys_pathsをnullにする方法では実習環境(Linux)でテーブルリストが更新されなくなるため処理をスキップ
+			// TODO: 具体的な原因解明
+			return;
+		}
+
 		if (!alreadySetJavaLibPath) {	//初回1回のみ実行
 			//参考: https://blogs.osdn.jp/2017/09/25/libpath.html
 			
@@ -263,12 +269,10 @@ public class DB {
 				System.out.println("newPath = "+newPath);
 				
 				System.setProperty("java.library.path", newPath);					// java.library.path を変更(この時点では反映されない)
-				// sys_pathsをnullにする方法では実習環境(Linux)でテーブルリストが更新されなくなるため処理をスキップ
-				if (!Functions.isLinux()) { 
-					// usr_pathsを直接更新する方法ではうまくいかないことがあったのでsys_pathsをnullにする方法をとっている
-					Field sys_paths = ClassLoader.class.getDeclaredField("sys_paths");	// 以下3行: sys_paths フィールドに null を代入、これで次にライブラリーをロードするときに最新の java.library.path が参照される
-					sys_paths.setAccessible(true);
-					sys_paths.set(null, null);
+				// usr_pathsを直接更新する方法ではうまくいかないことがあったのでsys_pathsをnullにする方法をとっている
+				Field sys_paths = ClassLoader.class.getDeclaredField("sys_paths");	// 以下3行: sys_paths フィールドに null を代入、これで次にライブラリーをロードするときに最新の java.library.path が参照される
+				sys_paths.setAccessible(true);
+				sys_paths.set(null, null);
 //			    final Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
 //			    usrPathsField.setAccessible(true);
 //			    //get array of paths
@@ -284,7 +288,6 @@ public class DB {
 //			    final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
 //			    newPaths[newPaths.length-1] = newPath;
 //			    usrPathsField.set(null, newPaths);
-				}
 			} catch (Exception e) {
 				System.out.println("setJavaLibPath() failed");
 				e.printStackTrace();
