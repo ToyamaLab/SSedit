@@ -158,6 +158,9 @@ public class SSQL_exec extends FrontEnd implements Runnable {
     		System.out.println("logger on");
     		command = Functions.arrayConcat(command, new String[]{"-logger", "on"});
 		}
+			if (GlobalEnv.enableSSstyle == 1) {
+				command = Functions.arrayConcat(command, new String[]{"-ssstyle", "on"});
+			}
     	String exec_ssql_argsField_text = GlobalEnv.exec_ssql_argsField.getText().trim();
 		if(!exec_ssql_argsField_text.equals("")){
 			String exec_ssq_args[] = exec_ssql_argsField_text.split("[\\s]+");		//半角スペース, タブ, 改行文字を分割対象とする: split("[\s]+")

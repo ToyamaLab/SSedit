@@ -1732,6 +1732,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             stopButton.setEnabled(false);
             GlobalEnv.resultPane.setEnabled(true);
             textArea.setEditable(false);
+            GlobalEnv.enableSSstyle = 1;
 
 
             // クエリの実行
@@ -1847,6 +1848,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             button2.setEnabled(false);
             layoutButton.setEnabled(false);
             GlobalEnv.resultPane.setEnabled(true);
+            GlobalEnv.enableSSstyle = 0;
 
             // クエリの実行
             String filename = new File(filename1).getAbsolutePath();
@@ -1941,6 +1943,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 button2.setEnabled(false);
                 layoutButton.setEnabled(false);
                 GlobalEnv.resultPane2.setEnabled(true);
+                GlobalEnv.enableSSstyle = 0;
 
                 // 選択されたフォルダ内の全クエリの実行
                 String execResultLogs = "", execSuccededResultLogs = "", execFailedResultLogs = "";
