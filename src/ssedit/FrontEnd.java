@@ -600,11 +600,15 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 tabbed_Table.setSelectedIndex(1);
                 stopButton.setEnabled(true);
 
+                // SSstyle起動中はSSeditは押せなくする
+                setVisible(false);
+
                 stopButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         worker1.cancel(true);
                         stopButton.setEnabled(false);
+                        setVisible(true);
                     }
                 });
             }
@@ -1788,6 +1792,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             layoutButton.setEnabled(true);
 
             reloadFolderTree();
+            setVisible(true);
            //GlobalEnv.folderModel.setSelectedItem(currentfileName);
 
 
@@ -1911,6 +1916,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             button2.setEnabled(true);
             stopButton.setEnabled(false);
             layoutButton.setEnabled(true);
+            setVisible(true);
         }
     }
 
@@ -2122,6 +2128,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             button2.setEnabled(true);
             stopButton.setEnabled(false);
             layoutButton.setEnabled(true);
+            setVisible(true);
         }
     }
 
