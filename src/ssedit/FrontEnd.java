@@ -98,6 +98,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     // main
     public static void main(String[] args) throws IOException,
             InterruptedException {
+                panel_option.setSelected(false);
 //    	System.out.println("XXX");
     		GlobalEnv.setLoggerFlag(args);
         new FrontEnd();
@@ -195,7 +196,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JLabel config_hostLabel = new JLabel("ホスト：");
     JLabel config_dbLabel = new JLabel("データベース名：");
     JLabel config_portLabel = new JLabel("ポート番号：");
-    JLabel config_instanceLabel = new JLabel("SQL Server インスタンス名：");					// goto 20200728  SQL Server 
+    JLabel config_instanceLabel = new JLabel("SQL Server インスタンス名：");					// goto 20200728  SQL Server
     JLabel config_optionsLabel = new JLabel("SQL Server 他のオプション(複数の場合は;区切り)：");	// goto 20200728  SQL Server
     JLabel config_userLabel = new JLabel("ユーザー名：");
     JLabel config_passwordLabel = new JLabel("パスワード：");
@@ -214,7 +215,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JButton button1 = new JButton("実行");
     JButton stopButton = new JButton("停止");
     JButton stopButton2 = new JButton("停止");
-
+    JButton layoutButton = new JButton("レイアウト編集");
+    static JCheckBox panel_option = new JCheckBox();
+    boolean succeed = true;
     //TODO
     JButton linkforeachButton = new JButton("％分割");
 
@@ -331,7 +334,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         // 前回の情報（開いていたフォルダ・ファイル）を読み込んで反映
         Functions.reflectSSQLtoolInfo();
         //Functions.reflectConfig();
-        
+
         // クエリ新規作成のコンボボックス
         querycomboModel = new DefaultComboBoxModel((Vector)combodata);
         queryCombo = new JComboBox(querycomboModel);
@@ -347,7 +350,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         tabCombo.setSelectedIndex(2);
         tabSize = 3;
         CaretState.changeTabSize(tabSize, GlobalEnv.textPane, GlobalEnv.doc);
-        
+
         // 文字コードのコンボボックス
         encoCombo = new JComboBox(GlobalEnv.encodingModel);
 
@@ -559,6 +562,61 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         bottomPanel1.add(stopButton);
         stopButton.setEnabled(false);
 
+        bottomPanel1.add(layoutButton);
+        //layoutButton.setBorderPainted(false);
+        layoutButton.setForeground(Color.pink);
+//        layoutButton.setFont(new Font("ＭＳ ゴシック",Font.ITALIC, 12));
+
+        //bottomPanel1.add(panel_option);
+
+        layoutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                if(filestateLabel.getText().equals("キャンセルしました") || filestateLabel.getText().equals("ファイル名を入力してください")){
+                    return;
+                }
+                if(GlobalEnv.folderModel.getSelectedItem().equals("")){
+                    return;
+                }
+                String data = GlobalEnv.textPane.getText(); // テキストエリアから値を得る（文書）
+                if(data.trim().equals("")){
+                    stateTimer.start();
+                    filestateLabel.setForeground(Color.RED);
+                    filestateLabel.setText("実行するクエリがありません");
+                    return;
+                }
+
+                String filename = filenameLabel.getText(); // テキストフィールドから値を得る（ファイル名）
+                filename = GlobalEnv.folderPath + GlobalEnv.OS_FS + filename;
+                saveButton.doClick();
+                // マルチスレッド(非同期)処理
+                // SwingWorkerを生成して実行
+                @SuppressWarnings("rawtypes")
+                final
+                SwingWorker worker1 = new execThread_Tasuku(filename, button1, folder_exe_button);
+                worker1.execute();
+
+                // 実行ボタンが押されたら実行結果のタブに切り替える
+                tabbed_Table.setSelectedIndex(1);
+                stopButton.setEnabled(true);
+
+                // SSstyle起動中はSSeditは押せなくする
+                // Linux(実習)環境ではFireFox(ブラウザ)を閉じないとSSeditが現れてこないので、そもそも消さない
+                if (!Functions.isLinux()) {
+                    setVisible(false);
+                }
+
+                stopButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        worker1.cancel(true);
+                        stopButton.setEnabled(false);
+                        setVisible(true);
+                    }
+                });
+            }
+        }
+    );
         /*
         bottomPanel1.add(linkforeachButton);
         bottomPanel1.add(simpleviewButton);
@@ -733,7 +791,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         lang.add(GlobalEnv.radio2[0]);
         lang.add(GlobalEnv.radio2[1]);
         lang.setLayout(new FlowLayout(FlowLayout.LEFT));
-        
+
         // optimizerRadio
         ButtonGroup bgOptimizerDir = new ButtonGroup();
         bgOptimizerDir.add(GlobalEnv.optimizerRadio[0]);
@@ -744,7 +802,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         optimizerPanel.add(GlobalEnv.optimizerRadio[0]);
         optimizerPanel.add(GlobalEnv.optimizerRadio[1]);
         optimizerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        
+
         // configSaveDirRadio
         ButtonGroup bgConfigSaveDir = new ButtonGroup();
         bgConfigSaveDir.add(GlobalEnv.configSaveDirRadio[0]);
@@ -755,9 +813,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         configSaveDir.add(GlobalEnv.configSaveDirRadio[0]);
         configSaveDir.add(GlobalEnv.configSaveDirRadio[1]);
         configSaveDir.setLayout(new FlowLayout(FlowLayout.LEFT));
-        
-        
-        
+
+
+
 
 
         JPanel tab = new JPanel();
@@ -765,23 +823,23 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         // tabCombo.addActionListener(this);
         tab.add(tabLabel);
         tab.add(tabCombo);
-        
+
         JPanel enco = new JPanel();
         enco.add(encodingLabel);
         enco.add(encoCombo);
-        
+
 
 
         GlobalEnv.radio2[0].addChangeListener(this); // ラジオボタンにチェンジリスナーを登録
         GlobalEnv.radio2[1].addChangeListener(this);
-        
+
         GlobalEnv.optimizerRadio[0].addChangeListener(this);
         GlobalEnv.optimizerRadio[1].addChangeListener(this);
-        
+
         GlobalEnv.configSaveDirRadio[0].addChangeListener(this);
         GlobalEnv.configSaveDirRadio[1].addChangeListener(this);
-        
-        
+
+
 
         setting_Top_Panel.add(settingPanel2);
         // configファイルの編集パネル
@@ -804,42 +862,42 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         Functions.addPanel(configPanel, config_driverLabel, 0, 1, 1, 1);
         Functions.addPanel(configPanel, driverCombo, 1, 1, 1, 1);
         Functions.addPanel(configPanel, p, 2, 1, 1, 1);
-        
+
         Functions.addPanel(configPanel, config_hostLabel, 0, 2, 1, 1);
         Functions.addPanel(configPanel, GlobalEnv.config_hostField, 1, 2, 1, 1);
         Functions.addPanel(configPanel, config_dbLabel, 3, 2, 1, 1);
         Functions.addPanel(configPanel, GlobalEnv.config_dbField, 4, 2, 1, 1);
-        
+
         Functions.addPanel(configPanel, config_portLabel, 0, 3, 1, 1);
         Functions.addPanel(configPanel, GlobalEnv.config_portField, 1, 3, 1, 1);
-        
-        Functions.addPanel(configPanel, config_instanceLabel, 0, 4, 1, 1);				// goto 20200728  SQL Server 
+
+        Functions.addPanel(configPanel, config_instanceLabel, 0, 4, 1, 1);				// goto 20200728  SQL Server
         Functions.addPanel(configPanel, GlobalEnv.config_instanceField, 1, 4, 1, 1);
-        
-        Functions.addPanel(configPanel, config_optionsLabel, 0, 5, 1, 1);				// goto 20200728  SQL Server 
+
+        Functions.addPanel(configPanel, config_optionsLabel, 0, 5, 1, 1);				// goto 20200728  SQL Server
         Functions.addPanel(configPanel, GlobalEnv.config_optionsField, 1, 5, 4, 1);
-        
-        
-        
-        
-        
+
+
+
+
+
 //        Functions.addPanel(configPanel, new JSeparator(JSeparator.HORIZONTAL), 4, 2, 1, 1);
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
         Functions.addPanel(configPanel, config_userLabel, 0, 6, 1, 1);
         Functions.addPanel(configPanel, GlobalEnv.config_userField, 1, 6, 1, 1);
         Functions.addPanel(configPanel, config_passwordLabel, 3, 6, 1, 1);
         Functions.addPanel(configPanel, GlobalEnv.config_passwordField, 4, 6, 1, 1);
-        
+
         Functions.addPanel(configPanel, config_outdirLabel, 0, 7, 1, 1);
 //		Common.addPanel(configPanel, GlobalEnv.config_outdirField, 1, 7, 3, 1);
         Functions.addPanel(configPanel, GlobalEnv.outdirCombo, 1, 7, 3, 1);
         Functions.addPanel(configPanel, selectoutdir_button, 4, 7, 1, 1);
-        
+
         Functions.addPanel(configPanel, config_pathLabel, 0, 8, 1, 1);
         Functions.addPanel(configPanel, GlobalEnv.urlCombo, 1, 8, 2, 1);
 
@@ -851,14 +909,14 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         Functions.addPanel(configPanel, GlobalEnv.exec_ssql_argsField, 1, 11, 4, 1);
         Functions.addPanel(configPanel, rhome_path_Panel, 0, 12, 1, 1);
         Functions.addPanel(configPanel, GlobalEnv.rhome_pathField, 1, 12, 4, 1);
-        
+
         Functions.addPanel(configPanel, new JSeparator(), 0, 13, 5, 1);		//横線
-        
+
         Functions.addPanel(configPanel, configSaveDirLabel, 0, 14, 1, 1);
         Functions.addPanel(configPanel, configSaveDir, 1, 14, 4, 1);
 
-        
-        
+
+
 
         JPanel textSize = new JPanel();
         textSize.setPreferredSize(new Dimension(300, 40));
@@ -1141,7 +1199,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
                     String filename = filenameLabel.getText(); // テキストフィールドから値を得る（ファイル名）
                     filename = GlobalEnv.folderPath + GlobalEnv.OS_FS + filename;
-                    
+
                             // マルチスレッド(非同期)処理
                             // SwingWorkerを生成して実行
                             @SuppressWarnings("rawtypes")
@@ -1452,7 +1510,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 //                    } else {
 ////						JOptionPane.showMessageDialog(null, "Save Successfully");
 //                    }
-                } 
+                }
 //                else {
 //                    System.out.println("設定ファイル保存失敗");
 ////					if (GlobalEnv.radio2[0].isSelected())
@@ -1653,6 +1711,124 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         }
     }
 
+    class execThread_Tasuku extends SwingWorker<Object, Object> {
+        private String filename1;
+        private JButton button1, button2;
+        //private String panel_option;
+
+        public execThread_Tasuku(String filename, JButton button1, JButton button2) {
+            this.button1 = button1;
+            this.button2 = button2;
+            this.filename1 = filename;
+            //this.panel_option = panel_option;
+        }
+
+        // 非同期処理
+        @Override
+        public Object doInBackground() {
+            // if(GlobalEnv.radio2[0].isSelected()){
+            // 前処理
+            button1.setEnabled(false);
+            layoutButton.setEnabled(false);
+            layoutButton.setText("実行中...");
+            button2.setEnabled(false);
+            stopButton.setEnabled(true);
+            GlobalEnv.resultPane.setEnabled(true);
+            textArea.setEditable(false);
+            GlobalEnv.enableSSstyle = 1;
+
+
+            // クエリの実行
+            String filename = new File(filename1).getAbsolutePath();
+            String logFile_outdir = new File(filename).getParent();
+
+            GlobalEnv.resultPane.setText("実行結果" + GlobalEnv.OS_LS + "");
+            ssqlExecLogs = "[クエリを実行]" + GlobalEnv.OS_LS + "";
+            ssqlExecLogs += "■実行ファイル: " + filename + "" + GlobalEnv.OS_LS + "";
+            try {
+                GlobalEnv.resultDoc.insertString(GlobalEnv.resultDoc.getLength(), "■実行ファイル: " + filename + "" + GlobalEnv.OS_LS + "", CaretState.plane);
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
+            ssqlExecLogs += "" + GlobalEnv.OS_LS + "＜詳細＞" + GlobalEnv.OS_LS
+                    + "";
+
+            if (SSQL_exec.execSuperSQL(filename, libsClassPath, GlobalEnv.resultPane, GlobalEnv.resultDoc)) {
+                ssqlExecLogs += "### レイアウト処理 終了 ###" + GlobalEnv.OS_LS + "";
+                try {
+                    GlobalEnv.resultDoc.insertString(GlobalEnv.resultDoc.getLength(), "### レイアウト処理 終了 ###" + GlobalEnv.OS_LS + "", CaretState.plane);
+                    succeed = true;
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+
+                if (GlobalEnv.radio1Selected == 0) {
+                     Functions.open(Functions.getHTMLAbsolutePath(GlobalEnv.folderPath, filename, "html")); // 成功時、生成されたファイルを開く
+                     //TODO:HTML以外のファイル(XML等)が生成された場合の判定処理
+                }
+            } else {
+                ssqlExecLogs += "### レイアウト処理 終了 ###" + GlobalEnv.OS_LS + "";
+                try {
+                    GlobalEnv.resultDoc.insertString(GlobalEnv.resultDoc.getLength(), "### レイアウト処理 終了 ###" + GlobalEnv.OS_LS + "", CaretState.errAttr);
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            }
+            Functions.createFile(logFile_outdir + GlobalEnv.OS_FS + "log.txt",
+                    ssqlExecLogs);
+            createNodes(root);
+            treemodel.reload();
+            return null;
+        }
+
+        // 非同期処理後に実行
+        @Override
+        protected void done() {
+            // ボタンを使用可能にする
+            if (GlobalEnv.radio2[0].isSelected())
+                layoutButton.setText("レイアウト編集");
+            else
+                button1.setText("Run");
+
+            button1.setEnabled(true);
+            button2.setEnabled(true);
+            stopButton.setEnabled(false);
+            layoutButton.setEnabled(true);
+
+            // 編集されたファイル内容をtextPaneに反映する
+            currentfileData = Functions.myfileReader(currentfileName);
+            GlobalEnv.textPane.setText(currentfileData);
+
+            reloadFolderTree();
+            setVisible(true);
+           //GlobalEnv.folderModel.setSelectedItem(currentfileName);
+
+
+
+			/* if(succeed == true)
+			reflectSSQLtoolInfo();*/
+
+
+
+            /*dir = new File(GlobalEnv.folderPath);
+
+            // ノードの作成
+            root = new DefaultMutableTreeNode(dir.getName());
+            createNodes(root);
+            // JTree オブジェクトの作成
+            treemodel = new DefaultTreeModel(root);
+            tree = new JTree(treemodel);
+            tree.addTreeSelectionListener(null);
+            tree.addMouseListener(null); // マウスイベント
+            // 1つ目のタブ左上のツリー
+            JPanel treePanel = new JPanel();
+            treePanel.add(new JLabel("作業フォルダ"));
+            final JScrollPane pane = new JScrollPane(tree);
+            treePanel.add(pane);
+            treePanel.setLayout(new BoxLayout(treePanel, BoxLayout.PAGE_AXIS));*/
+
+        }
+    }
     /**********************************************************************************************/
     /* マルチスレッド(非同期)処理（クエリの実行・選択されたフォルダ内の全クエリの実行など） */
     /**********************************************************************************************/
@@ -1677,7 +1853,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             stopButton.setEnabled(true);
             button1.setText("実行中...");
             button2.setEnabled(false);
+            layoutButton.setEnabled(false);
             GlobalEnv.resultPane.setEnabled(true);
+            GlobalEnv.enableSSstyle = 0;
 
             // クエリの実行
             String filename = new File(filename1).getAbsolutePath();
@@ -1746,6 +1924,8 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             button1.setEnabled(true);
             button2.setEnabled(true);
             stopButton.setEnabled(false);
+            layoutButton.setEnabled(true);
+            setVisible(true);
         }
     }
 
@@ -1768,7 +1948,9 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 stopButton2.setEnabled(true);
                 button1.setText("実行中...");
                 button2.setEnabled(false);
+                layoutButton.setEnabled(false);
                 GlobalEnv.resultPane2.setEnabled(true);
+                GlobalEnv.enableSSstyle = 0;
 
                 // 選択されたフォルダ内の全クエリの実行
                 String execResultLogs = "", execSuccededResultLogs = "", execFailedResultLogs = "";
@@ -1955,9 +2137,11 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             button1.setEnabled(true);
             button2.setEnabled(true);
             stopButton.setEnabled(false);
+            layoutButton.setEnabled(true);
+            setVisible(true);
         }
     }
-    
+
     /* 非同期に行う処理を記述するためのクラス3 */
     // 1つ目のタブ　更新 (テーブルリストの更新)
     class execThread3 extends SwingWorker<Object, Object> {

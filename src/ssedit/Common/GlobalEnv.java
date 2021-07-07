@@ -255,6 +255,7 @@ public class GlobalEnv {
 	public static int optimizerRadioSelected = 0;
 	public static JRadioButton[] configSaveDirRadio = new JRadioButton[2];
 	public static int configSaveDirRadioSelected = 0;
+	public static int enableSSstyle = 0; // SSstyleを{0:起動しない 1: 起動する}でSSQLを実行
 
 
 //	public static final JComboBox folderCombo    = History.makeComboBox(Functions.has(USER_HOME + OS_FS + ".ssqltool", "folderPath1"));
