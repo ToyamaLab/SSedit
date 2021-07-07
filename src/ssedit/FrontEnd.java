@@ -601,7 +601,10 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
                 stopButton.setEnabled(true);
 
                 // SSstyle起動中はSSeditは押せなくする
-                setVisible(false);
+                // Linux(実習)環境ではFireFox(ブラウザ)を閉じないとSSeditが現れてこないので、そもそも消さない
+                if (!Functions.isLinux()) {
+                    setVisible(false);
+                }
 
                 stopButton.addActionListener(new ActionListener() {
                     @Override
