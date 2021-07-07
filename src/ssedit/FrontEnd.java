@@ -215,7 +215,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
     JButton button1 = new JButton("実行");
     JButton stopButton = new JButton("停止");
     JButton stopButton2 = new JButton("停止");
-    JButton layoutButton = new JButton("レイアウト");
+    JButton layoutButton = new JButton("レイアウト編集");
     static JCheckBox panel_option = new JCheckBox();
     boolean succeed = true;
     //TODO
@@ -1783,7 +1783,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
         protected void done() {
             // ボタンを使用可能にする
             if (GlobalEnv.radio2[0].isSelected())
-                layoutButton.setText("レイアウト");
+                layoutButton.setText("レイアウト編集");
             else
                 button1.setText("Run");
 
