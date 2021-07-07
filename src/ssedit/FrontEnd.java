@@ -1732,7 +1732,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             layoutButton.setEnabled(false);
             layoutButton.setText("実行中...");
             button2.setEnabled(false);
-            stopButton.setEnabled(false);
+            stopButton.setEnabled(true);
             GlobalEnv.resultPane.setEnabled(true);
             textArea.setEditable(false);
             GlobalEnv.enableSSstyle = 1;
@@ -1792,7 +1792,7 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
 
             button1.setEnabled(true);
             button2.setEnabled(true);
-            stopButton.setEnabled(true);
+            stopButton.setEnabled(false);
             layoutButton.setEnabled(true);
 
             // 編集されたファイル内容をtextPaneに反映する
