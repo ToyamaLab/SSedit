@@ -1792,6 +1792,10 @@ public class FrontEnd extends JFrame implements ChangeListener, ItemListener, Ke
             stopButton.setEnabled(true);
             layoutButton.setEnabled(true);
 
+            // 編集されたファイル内容をtextPaneに反映する
+            currentfileData = Functions.myfileReader(currentfileName);
+            GlobalEnv.textPane.setText(currentfileData);
+
             reloadFolderTree();
             setVisible(true);
            //GlobalEnv.folderModel.setSelectedItem(currentfileName);
